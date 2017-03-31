@@ -19,5 +19,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/home/guilherme/Desktop/TCC Real/mysql-connector-java-5.1.41/mysql-connector-java-5.1.41-bin.jar"/>
+	<classpathentry kind="lib" path="/home/guilherme/Android/Sdk/tools/lib/jython-standalone-2.5.3.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

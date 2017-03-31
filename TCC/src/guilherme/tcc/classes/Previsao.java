@@ -1,5 +1,6 @@
 package guilherme.tcc.classes;
 
+import java.io.IOException;
 import java.sql.Date;
 import java.util.List;
 
@@ -17,6 +18,30 @@ public class Previsao {
 	private String cidade;
 	private float velocidade_vento;
 
+	
+	public String fazerPrevisao(Date data){
+		PrevisaoDAO previsaoDAO = new PrevisaoDAOImpl();
+		/*
+		Previsao previsao = new Previsao();
+		medicao.setData(new Date(2016-1900, 6, 13));
+		medicao.setTemperatura_maxima(5);
+		medicao.setTemperatura_minima(3);
+		medicao.setPrecipitacao(precipitacao);
+		medicaoDAO.updateMedicao(medicao);
+		List<Medicao> medicoes = medicaoDAO.getAllMedicao();
+		System.out.println(medicoes.get(0).getTemperatura_maxima());
+		return this.previsaoToJSONString(medicoes.get(0));
+		*/
+		
+		List<Previsao> p = previsaoDAO.getPrevisaoByDate(data);
+		return previsaoToJSONString(p.get(0));
+	}
+	
+	private String previsaoToJSONString(Previsao previsao){
+		return String.format("{data:%s,  precipitacao:%s, temperatura_maxima:%s, temperatura_minima:%s, temperatura_media:%s, cidade:%s}",
+				previsao.getData(), previsao.getPrecipitacao(), previsao.getTemperatura_maxima(), previsao.getTemperatura_minima(), previsao.getTemperatura_media(), previsao.getCidade());
+	}
+	
 	public int getId() {
 		return id;
 	}
@@ -64,28 +89,5 @@ public class Previsao {
 	}
 	public void setCidade(String cidade) {
 		this.cidade = cidade;
-	}
-	
-	public String fazerPrevisao(Date data){
-		PrevisaoDAO previsaoDAO = new PrevisaoDAOImpl();
-		/*
-		Previsao previsao = new Previsao();
-		medicao.setData(new Date(2016-1900, 6, 13));
-		medicao.setTemperatura_maxima(5);
-		medicao.setTemperatura_minima(3);
-		medicao.setPrecipitacao(precipitacao);
-		medicaoDAO.updateMedicao(medicao);
-		List<Medicao> medicoes = medicaoDAO.getAllMedicao();
-		System.out.println(medicoes.get(0).getTemperatura_maxima());
-		return this.previsaoToJSONString(medicoes.get(0));
-		*/
-		System.out.println(data.toString());
-		List<Previsao> p = previsaoDAO.getPrevisaoByDate(data);
-		return previsaoToJSONString(p.get(0));
-	}
-	
-	private String previsaoToJSONString(Previsao previsao){
-		return String.format("{data:%s,  precipitacao:%s, temperatura_maxima:%s, temperatura_minima:%s, temperatura_media:%s, cidade:%s}",
-				previsao.getData(), previsao.getPrecipitacao(), previsao.getTemperatura_maxima(), previsao.getTemperatura_minima(), previsao.getTemperatura_media(), previsao.getCidade());
 	}
 }
