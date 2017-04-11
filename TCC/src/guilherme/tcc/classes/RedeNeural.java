@@ -37,6 +37,8 @@ public class RedeNeural {
 	private double[][] dadosEntrada; // Dados de entrada da rede
 	private double[][] dadosSaida; // Dados de saida da rede
 	
+	private double[][] saidaTreino; // Dados usados para treinar rede (Comparar dadosSaida com essa matriz)
+	
 	private double[][] dadosEntradaIntermediaria;
 	private double[][] dadosEntradaIntermediariaTransformada;
 	private double[][] dadosIntermediariaSaida;
@@ -89,6 +91,52 @@ public class RedeNeural {
 		System.out.println();
 	}
 	
+	// Gera populacao inicial - valores aleatorios para os pesos
+	// A populacao eh formada por um conjunto de matrizes de peso
+	// Cada "membro" da populacao eh uma matriz inteira, e nao somente um peso
+	public void gerarPopulacaoInicial(){
+		int i;
+		int j;
+		
+		for(i = 0; i < tamanhoEntrada; i++){
+			for(j = 0; j < tamanhoIntermediaria; j++){
+				this.pesosEntradaIntermediaria[i][j] = 0;
+			}
+		}
+		
+		for(i = 0; i < tamanhoIntermediaria; i++){
+			for(j = 0; j < tamanhoSaida; j++){
+				this.pesosIntermediariaSaida[i][j] = 0;
+			}
+		}
+	}
+	
+	/*
+	 * Calcula o fitness da populacao atual
+	 * Duvida sobre fitness - como calcular?
+	 * Possivel solucao: 
+	 * 1 - Calcular Fitness - calcular distancia do valor gerado pela rede em relacao ao valor de teste, quanto menor a distancia, maior seu 'fitness';
+	 * 2 - Reproduzir - seleciona 2 pais (2 matrizes de peso) de uma forma que os com maior 'fitness' tenham mais chances de serem escolhidos;
+	 * 3 - Crossover - criar um novo elemento  pegando os pesos de entrada de um pai e os pesos de saida do outro pai;
+	 * 4 - Mutacao - definir chance de mutacao (ex: cada peso tem 1% de chance de ser mudado) e aplicar essa mutacao
+	 */ 
+	public void calcularFitness(){
+		
+	}
+	
+	public void reproduzir(){
+		
+	}
+	
+	public void crossover(){
+		
+	}
+	
+	public void mutacao(){
+		
+	}
+	
+	// Executa a rede neural - feedforward
 	public void executar(){
 		
 		int i = 0;
@@ -125,11 +173,12 @@ public class RedeNeural {
 			for(Neuronio n : intermediaria.getNeuronios()){
 				n.setEntrada(this.dadosEntradaIntermediariaTransformada[j]);
 				n.calcularValor(this.dadosEntradaIntermediariaTransformada[j].length);
+				System.out.print("\nValor N" + (j+3) + "\n" + n.getValor());
 				this.dadosIntermediariaSaida[j] = n.calcularSaida(this.pesosIntermediariaSaida[j]);
 				
 				System.out.println("\nSaidas N" + (j+3));
 				for(int k = 0; k < tamanhoSaida; k++){
-					System.out.print(this.dadosEntradaIntermediariaTransformada[j][k] + " ");
+					System.out.print(this.dadosIntermediariaSaida[j][k] + " ");
 				}
 				System.out.println();
 				j++;
@@ -150,7 +199,7 @@ public class RedeNeural {
 				
 				System.out.println("\nSaidas N" + (j+6));
 				for(int k = 0; k < tamanhoSaida; k++){
-					System.out.print(this.dadosSaida[j][k] + " ");
+					System.out.print(this.dadosSaida[i][j] + " ");
 				}
 				System.out.println();
 				j++;
@@ -165,15 +214,6 @@ public class RedeNeural {
 		
 		
 		double[][] m2 = new double[m1[0].length][m1.length];
-		/*System.out.println("****M1********");
-		for(int i = 0; i < m1.length; i++){
-			for(int j = 0; j < m1[0].length; j++){
-				System.out.print(m1[i][j] + " ");
-			}
-			System.out.println();
-		}
-		System.out.println("******M1******");
-		*/
 		
 		//System.out.println("Inversao, x = " + m1[0][0] + " y = " + m1[1][0]);
 		for(int i = 0; i < m1[0].length; i++){

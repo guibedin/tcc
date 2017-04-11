@@ -25,15 +25,15 @@ public class Neuronio {
 	private double[] saida; // Valor de saida = valor * peso
 	
 	private double valor; // Valor final do neuronio = sigmoide da soma das entradas
-	private List<Sinapse> sinapse; // Tamanha da camada anterior
+	//private List<Sinapse> sinapse; // Tamanha da camada anterior
 	
 	public Neuronio(){
-		sinapse = new ArrayList<Sinapse>();
+		//sinapse = new ArrayList<Sinapse>();
 		//this.entrada = new double[4];		
 	}
 	
 	public Neuronio(double[] entradas){
-		sinapse = new ArrayList<Sinapse>();
+		//sinapse = new ArrayList<Sinapse>();
 		this.entrada = entradas;
 	}
 	
@@ -50,8 +50,10 @@ public class Neuronio {
 	
 	public double[] calcularSaida(double[] pesos){
 		this.saida = new double[pesos.length];
+		
 		for(int i = 0; i < pesos.length; i++){
 			this.saida[i] = this.valor * pesos[i];
+			System.out.print("\nValor: " + this.valor + " Peso: " + pesos[i] + " Saida: "+ this.saida[i]);
 		}
 		return this.saida;
 	}
@@ -66,6 +68,10 @@ public class Neuronio {
 
 	public void setEntrada(double[] entrada) {
 		this.entrada = entrada;
+		/*System.out.println("\nEntrada: ");
+		for(int i = 0; i < this.entrada.length; i++){
+			System.out.println(this.entrada[i]);
+		}*/
 	}
 	
 	public void setEntrada(double entrada, int i){
@@ -88,13 +94,13 @@ public class Neuronio {
 		this.valor = valor;
 	}
 
-	public List<Sinapse> getSinapse() {
+	/*public List<Sinapse> getSinapse() {
 		return sinapse;
 	}
 
 	public void setSinapse(List<Sinapse> sinapse) {
 		this.sinapse = sinapse;
-	}
+	}*/
 	
 	
 	

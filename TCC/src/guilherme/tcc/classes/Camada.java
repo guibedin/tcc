@@ -17,7 +17,7 @@ import java.util.List;
 public class Camada {
 	
 	private List<Neuronio> neuronios;
-	private Sinapse[][] sinapses;
+	//private Sinapse[][] sinapses;
 	private Camada anterior;
 	private Camada proxima;
 	
