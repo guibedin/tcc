@@ -53,7 +53,7 @@ public class Neuronio {
 		
 		for(int i = 0; i < pesos.length; i++){
 			this.saida[i] = this.valor * pesos[i];
-			System.out.print("\nValor: " + this.valor + " Peso: " + pesos[i] + " Saida: "+ this.saida[i]);
+			//System.out.print("\nValor: " + this.valor + " Peso: " + pesos[i] + " Saida: "+ this.saida[i]);
 		}
 		return this.saida;
 	}
