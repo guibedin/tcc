@@ -12,8 +12,8 @@ public class Main {
 		int geracoes;
 		long inicioTreino;
 		long fimTreino;
-		String entradaMaxima = "entradasMaxima.txt";
-		String saidaMaxima = "saidasMaxima.txt";
+		String entradaMaxima = "entradas2.txt";
+		String saidaMaxima = "saidas2.txt";
 		RedeNeural rede = new RedeNeural();
 		
 		inicioTreino = System.currentTimeMillis(); // Tempo inicial de execucao
@@ -21,18 +21,20 @@ public class Main {
 		fimTreino = System.currentTimeMillis(); // Tempo final de execucao
 		
 		rede.printarMatrizes(rede.getMaiorFitness());
-		rede.desnormalizarDados(rede.getMaiorFitness(), 0);
+		//rede.desnormalizarDados(rede.getMaiorFitness(), 0);
 		Elemento e = rede.getMaiorFitness();
 		
+		/*
 		System.out.println("\nMatriz de Saida Desnormalizada:");
 		for(int i = 0; i < numeroEntradas; i++){
 			for(int j = 0; j < tamanhoSaida; j++){
 				System.out.print(e.dadosSaida[i][j] + ", ");	
 			}			
-		}
+		}*/
 		
 		System.out.println("\nNumero de Entradas: " + numeroEntradas);
-		System.out.println("Tamanho Camada Intermediaria: " + tamanhoIntermediaria);
+		System.out.println("Tamanho Camada Intermediaria 1: " + tamanhoIntermediaria1);
+		System.out.println("Tamanho Camada Intermediaria 2: " + tamanhoIntermediaria2);
 		System.out.println("Tamanho Populacao: " + tamanhoPopulacao);
 		System.out.println("Chance de Mutacao: " + chanceMutacao + " = " + chanceMutacao*100 + "%");
 		System.out.println("Chance de CrossOver: " + chanceCross+ " = " + chanceCross*100 + "%");

@@ -17,9 +17,6 @@ import java.util.List;
 public class Camada {
 	
 	private List<Neuronio> neuronios;
-	//private Sinapse[][] sinapses;
-	private Camada anterior;
-	private Camada proxima;
 	
 	public Camada(int tamanho){
 		this.neuronios = new ArrayList<Neuronio>();
@@ -53,22 +50,4 @@ public class Camada {
 	public void setNeuronios(List<Neuronio> neuronios) {
 		this.neuronios = neuronios;
 	}
-
-	public Camada getAnterior() {
-		return anterior;
-	}
-
-	public void setAnterior(Camada anterior) {
-		this.anterior = anterior;
-	}
-
-	public Camada getProxima() {
-		return proxima;
-	}
-
-	public void setProxima(Camada proxima) {
-		this.proxima = proxima;
-	}
-	
-	
 }

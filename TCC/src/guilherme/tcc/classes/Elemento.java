@@ -12,18 +12,21 @@ import static util.Constantes.*;
 
 public class Elemento implements Comparable<Elemento> {
 
-	public double[][] pesosEntradaIntermediaria; // Matriz de sinapses (pesos)
-	public double[][] pesosIntermediariaSaida; // Matriz de sinapses (pesos)
+	public double[][] pesosEntradaIntermediaria1; // Matriz de sinapses (pesos)
+	public double[][] pesosIntermediaria1Intermediaria2; 
+	public double[][] pesosIntermediaria2Saida; // Matriz de sinapses (pesos)
 	
 	public double[][] dadosEntrada; // Dados de entrada da rede
 	public double[][] dadosSaida; // Dados de saida da rede
 	
 	public double[][] saidaTreino; // Dados usados para treinar rede (Comparar dadosSaida com essa matriz)
 	
-	public double[][] dadosEntradaIntermediaria;
-	public double[][] dadosEntradaIntermediariaTransformada;
-	public double[][] dadosIntermediariaSaida;
-	public double[][] dadosIntermediariaSaidaTransformada;
+	public double[][] dadosEntradaIntermediaria1;
+	public double[][] dadosEntradaIntermediaria1Transformada;
+	public double[][] dadosIntermediaria1Intermediaria2;
+	public double[][] dadosIntermediaria1Intermediaria2Transformada;	
+	public double[][] dadosIntermediaria2Saida;
+	public double[][] dadosIntermediaria2SaidaTransformada;
 	
 	private double fitness;
 	private int elementoID;
@@ -40,13 +43,14 @@ public class Elemento implements Comparable<Elemento> {
 		this.saidaTreino = new double[numeroEntradas][tamanhoSaida];
 		
 		// Matrizes de saida de uma camada -> entrada da proxima
-		this.dadosEntradaIntermediaria = new double[tamanhoEntrada][tamanhoIntermediaria];
-		this.dadosIntermediariaSaida = new double[tamanhoIntermediaria][tamanhoSaida];
-		
+		this.dadosEntradaIntermediaria1 = new double[tamanhoEntrada][tamanhoIntermediaria1];
+		this.dadosIntermediaria1Intermediaria2 = new double[tamanhoIntermediaria1][tamanhoIntermediaria2];
+		this.dadosIntermediaria2Saida = new double[tamanhoIntermediaria2][tamanhoSaida];
 		
 		// Matrizes de peso das sinapses (entrada -> intermediaria / intermediaria -> saida)
-		this.pesosEntradaIntermediaria = new double[tamanhoEntrada][tamanhoIntermediaria];
-		this.pesosIntermediariaSaida = new double[tamanhoIntermediaria][tamanhoSaida];
+		this.pesosEntradaIntermediaria1 = new double[tamanhoEntrada][tamanhoIntermediaria1];
+		this.pesosIntermediaria1Intermediaria2 = new double[tamanhoIntermediaria1][tamanhoIntermediaria2];
+		this.pesosIntermediaria2Saida = new double[tamanhoIntermediaria2][tamanhoSaida];
 		
 		this.elementoID = elementoID;
 		
@@ -56,15 +60,8 @@ public class Elemento implements Comparable<Elemento> {
 		this.lerArquivos(entrada);
 		this.lerArquivos("pesos1" + elementoID + ".txt");
 		this.lerArquivos("pesos2" + elementoID + ".txt");
+		this.lerArquivos("pesos3" + elementoID + ".txt");
 		this.lerArquivos(saida);
-		/*
-		System.out.println("\nMatriz SaidaTreino:");
-		for(int i = 0; i < numeroEntradas; i++){
-			for(int j = 0; j < tamanhoSaida; j++){
-				System.out.print(this.saidaTreino[i][j] + ", ");
-			}
-			System.out.println();
-		}*/
 	}
 	
 	// Calcula fitness do elemento
@@ -75,7 +72,7 @@ public class Elemento implements Comparable<Elemento> {
 			for(int j = 0; j < tamanhoSaida; j++){
 				//System.out.println("ERRO: " + dadosSaida[i][j] + " "  + saidaTreino[i][j]);
 				// Erro percentual medio
-				//erro += Math.abs((saidaTreino[i][j] - dadosSaida[i][j]))/saidaTreino[i][j];
+				//erro += (Math.abs(saidaTreino[i][j] - dadosSaida[i][j]))/saidaTreino[i][j];
 				
 				// Erro quadratico medio
 				erro += Math.pow((saidaTreino[i][j] - dadosSaida[i][j]), 2);
@@ -83,7 +80,7 @@ public class Elemento implements Comparable<Elemento> {
 		}
 		
 		this.fitness = erro/(numeroEntradas*tamanhoSaida);
-		//System.out.println("FITNESS: " + this.fitness);
+		//System.out.println("FITNESS: " + this.fitness + " " + erro);
 	}
 	
 	// Faz a mutacao do elemento
@@ -92,19 +89,28 @@ public class Elemento implements Comparable<Elemento> {
 		
 		// Muta matriz de peso 1 (Entrada -> Intermediaria)
 		for(int i = 0; i < tamanhoEntrada; i++){
-			for(int j = 0; j < tamanhoIntermediaria; j++){
+			for(int j = 0; j < tamanhoIntermediaria1; j++){
 				if(r.nextDouble() < chanceMutacao){
-					this.pesosEntradaIntermediaria[i][j] = this.gerarPeso();
+					this.pesosEntradaIntermediaria1[i][j] = this.gerarPeso();
 					//System.out.println("mutou1");
 				}
 			}
 		}
-		
-		// Muta matriz de peso 2 (Intermediaria -> Saida)
-		for(int i = 0; i < tamanhoIntermediaria; i++){
+		// Muta matriz de peso 2 (Intermediaria1 -> Intermediaria2)
+		for(int i = 0; i < tamanhoIntermediaria1; i++){
+			for(int j = 0; j < tamanhoIntermediaria2; j++){
+				if(r.nextDouble() < chanceMutacao){
+					this.pesosIntermediaria1Intermediaria2[i][j] = this.gerarPeso();
+					//System.out.println("mutou2");
+				}
+			}
+		}
+				
+		// Muta matriz de peso 3 (Intermediaria -> Saida)
+		for(int i = 0; i < tamanhoIntermediaria2; i++){
 			for(int j = 0; j < tamanhoSaida; j++){
 				if(r.nextDouble() < chanceMutacao){
-					this.pesosIntermediariaSaida[i][j] = this.gerarPeso();
+					this.pesosIntermediaria2Saida[i][j] = this.gerarPeso();
 					//System.out.println("mutou2");
 				}
 			}
@@ -119,17 +125,24 @@ public class Elemento implements Comparable<Elemento> {
 		try{
 		    PrintWriter writer = new PrintWriter(path + "pesos1" + this.elementoID + ".txt", "UTF-8");
 		    for(int i = 0; i < tamanhoEntrada; i++){
-		    	for(int j = 0; j < tamanhoIntermediaria; j++){
+		    	for(int j = 0; j < tamanhoIntermediaria1; j++){
 			    	writer.print(gerarPeso() + " ");
 			    }
 		    	writer.println();
 		    }
-		    //writer.println(gerarPeso() + " " + gerarPeso() + " " + gerarPeso());
-		    //writer.println(gerarPeso() + " " + gerarPeso() + " " + gerarPeso());
 		    writer.close();
 		    
 		    writer = new PrintWriter(path + "pesos2" + this.elementoID + ".txt", "UTF-8");
-		    for(int i = 0; i < tamanhoIntermediaria; i++){
+		    for(int i = 0; i < tamanhoIntermediaria1; i++){
+		    	for(int j = 0; j < tamanhoIntermediaria2; j++){
+			    	writer.print(gerarPeso() + " ");
+			    }
+		    	writer.println();
+		    }
+		    writer.close();
+		    
+		    writer = new PrintWriter(path + "pesos3" + this.elementoID + ".txt", "UTF-8");
+		    for(int i = 0; i < tamanhoIntermediaria2; i++){
 		    	for(int j = 0; j < tamanhoSaida; j++){
 			    	writer.print(gerarPeso() + " ");
 			    }
@@ -165,7 +178,7 @@ public class Elemento implements Comparable<Elemento> {
 				
 				//If's para determinar o que fazer com cada linha do arquivo, de acordo com o seu nome
 				
-				if(arquivo.equals("entradasMaxima.txt")){
+				if(arquivo.equals("entradas2.txt")){
 					// Preenche matriz com dados de entrada
 					for(int i = 0; i < tamanhoEntrada; i++){
 						this.dadosEntrada[contador][i] = Double.parseDouble(numeros[i]);						
@@ -175,21 +188,29 @@ public class Elemento implements Comparable<Elemento> {
 				
 				if(arquivo.equals("pesos1" + this.elementoID + ".txt")){
 					// Preenche matriz de peso 1 - Camada de entrada -> Intermediaria
-					for(int i = 0; i < tamanhoIntermediaria; i++){
-						this.pesosEntradaIntermediaria[contador][i] = Double.parseDouble(numeros[i]);
+					for(int i = 0; i < tamanhoIntermediaria1; i++){
+						this.pesosEntradaIntermediaria1[contador][i] = Double.parseDouble(numeros[i]);
 					}
 					contador++;
 				}
 				
 				if(arquivo.equals("pesos2" + this.elementoID + ".txt")){
 					// Preenche matriz de peso 2 - Camada Intermediaria -> Saida
-					for(int i = 0; i < tamanhoSaida; i++){
-						this.pesosIntermediariaSaida[contador][i] = Double.parseDouble(numeros[i]);
+					for(int i = 0; i < tamanhoIntermediaria2; i++){
+						this.pesosIntermediaria1Intermediaria2[contador][i] = Double.parseDouble(numeros[i]);
 					}
 					contador++;
 				}
 				
-				if(arquivo.equals("saidasMaxima.txt")){
+				if(arquivo.equals("pesos3" + this.elementoID + ".txt")){
+					// Preenche matriz de peso 2 - Camada Intermediaria -> Saida
+					for(int i = 0; i < tamanhoSaida; i++){
+						this.pesosIntermediaria2Saida[contador][i] = Double.parseDouble(numeros[i]);
+					}
+					contador++;
+				}
+				
+				if(arquivo.equals("saidas2.txt")){
 					// Preenche matriz de peso 2 - Camada Intermediaria -> Saida
 					for(int i = 0; i < tamanhoSaida; i++){
 						this.saidaTreino[contador][i] = Double.parseDouble(numeros[i]);
