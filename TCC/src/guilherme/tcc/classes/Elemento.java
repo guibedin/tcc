@@ -8,19 +8,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Random;
 
+import static util.Constantes.*;
+
 public class Elemento implements Comparable<Elemento> {
 
-	// Numero de entradas (Testes / Linhas do arquivo)
-	// Cada linha do arquivo representa uma entrada
-	private static final int numeroEntradas = 3;
-	
-	// Tamanho das camadas
-	private static final int tamanhoEntrada = 2;
-	private static final int tamanhoIntermediaria = 8;
-	private static final int tamanhoSaida = 1;
-	// Chance de mutacao
-	private static final double chanceMutacao = 0.03;
-	
 	public double[][] pesosEntradaIntermediaria; // Matriz de sinapses (pesos)
 	public double[][] pesosIntermediariaSaida; // Matriz de sinapses (pesos)
 	
@@ -39,7 +30,7 @@ public class Elemento implements Comparable<Elemento> {
 	
 	// Inicia cada elemento da populacao
 	// Elementos sao compostos pelos dados de entrada, matrizes de peso e dados de saida
-	public Elemento(int elementoID){
+	public Elemento(int elementoID, String entrada, String saida){
 	
 		// Matriz de dados de entrada
 		this.dadosEntrada = new double[numeroEntradas][tamanhoEntrada];
@@ -61,10 +52,11 @@ public class Elemento implements Comparable<Elemento> {
 		
 		this.gerarArquivosDePesos();
 		
-		this.lerArquivos("entradas.txt");
+		
+		this.lerArquivos(entrada);
 		this.lerArquivos("pesos1" + elementoID + ".txt");
 		this.lerArquivos("pesos2" + elementoID + ".txt");
-		this.lerArquivos("saidaTreino.txt");
+		this.lerArquivos(saida);
 		/*
 		System.out.println("\nMatriz SaidaTreino:");
 		for(int i = 0; i < numeroEntradas; i++){
@@ -122,7 +114,7 @@ public class Elemento implements Comparable<Elemento> {
 	// Cria arquivos de pesos
 	public void gerarArquivosDePesos(){
 		
-		String path = "/home/guilherme/Desktop/TCC Real/Semestre 2/ArquivosNN/";
+		String path = "/home/guilherme/Desktop/TCC Real/Semestre 2/ArquivosNN/Treinamento/";
 		
 		try{
 		    PrintWriter writer = new PrintWriter(path + "pesos1" + this.elementoID + ".txt", "UTF-8");
@@ -156,23 +148,24 @@ public class Elemento implements Comparable<Elemento> {
 		return r.nextGaussian();
 	}
 	
+	
 	public void lerArquivos(String arquivo){
 		String linha;
 		int contador = 0;
 
 		try{
 			// Abre arquivo passado como parametro
-			InputStream entradaIS = new FileInputStream("/home/guilherme/Desktop/TCC Real/Semestre 2/ArquivosNN/" + arquivo);
+			InputStream entradaIS = new FileInputStream("/home/guilherme/Desktop/TCC Real/Semestre 2/ArquivosNN/Treinamento/" + arquivo);
 			InputStreamReader entradaISR = new InputStreamReader(entradaIS);
 			BufferedReader buffer = new BufferedReader(entradaISR);
 			
 			// Comeca leitura do arquivo, linha por linha
-			while ((linha = buffer.readLine()) != null){
+			while ((linha = buffer.readLine()) != null && contador < numeroEntradas){
 				String[] numeros = linha.split("\\s+");
 				
 				//If's para determinar o que fazer com cada linha do arquivo, de acordo com o seu nome
 				
-				if(arquivo.equals("entradas.txt")){
+				if(arquivo.equals("entradasMaxima.txt")){
 					// Preenche matriz com dados de entrada
 					for(int i = 0; i < tamanhoEntrada; i++){
 						this.dadosEntrada[contador][i] = Double.parseDouble(numeros[i]);						
@@ -196,7 +189,7 @@ public class Elemento implements Comparable<Elemento> {
 					contador++;
 				}
 				
-				if(arquivo.equals("saidaTreino.txt")){
+				if(arquivo.equals("saidasMaxima.txt")){
 					// Preenche matriz de peso 2 - Camada Intermediaria -> Saida
 					for(int i = 0; i < tamanhoSaida; i++){
 						this.saidaTreino[contador][i] = Double.parseDouble(numeros[i]);

@@ -35,8 +35,9 @@ public class MedicaoDAOImpl implements MedicaoDAO {
 				m.setPrecipitacao(rs.getFloat(3));
 				m.setTemperatura_maxima(rs.getFloat(4));
 				m.setTemperatura_minima(rs.getFloat(5));
-				m.setCidade(rs.getString(7));
-				m.setVelocidade_vento(rs.getFloat(8));
+				m.setTemperatura_media(rs.getFloat(6));
+				//m.setCidade(rs.getString(7));
+				//m.setVelocidade_vento(rs.getFloat(8));
 				
 				medicaoResult.add(m);
 			}
@@ -52,7 +53,7 @@ public class MedicaoDAOImpl implements MedicaoDAO {
 	public List<Medicao> getMedicaoByDate(Date data){
 		try{
 			Connection con = ConectarBanco.getConnection();
-			PreparedStatement stmt = con.prepareStatement("SELECT * FROM MEDICAO WHERE DATA = ?");
+			PreparedStatement stmt = con.prepareStatement("SELECT * FROM MEDICAO WHERE DATA = '?'");
 			stmt.setDate(1, data);
 			ResultSet rs = stmt.executeQuery();
 			List<Medicao> medicaoResult = new ArrayList<Medicao>();
@@ -64,8 +65,9 @@ public class MedicaoDAOImpl implements MedicaoDAO {
 				m.setPrecipitacao(rs.getFloat(3));
 				m.setTemperatura_maxima(rs.getFloat(4));
 				m.setTemperatura_minima(rs.getFloat(5));
-				m.setCidade(rs.getString(6));
-				m.setVelocidade_vento(rs.getFloat(7));
+				m.setTemperatura_media(rs.getFloat(6));
+				//m.setCidade(rs.getString(6));
+				//m.setVelocidade_vento(rs.getFloat(7));
 				
 				medicaoResult.add(m);
 			}
@@ -94,8 +96,9 @@ public class MedicaoDAOImpl implements MedicaoDAO {
 				m.setPrecipitacao(rs.getFloat(3));
 				m.setTemperatura_maxima(rs.getFloat(4));
 				m.setTemperatura_minima(rs.getFloat(5));
-				m.setCidade(rs.getString(6));
-				m.setVelocidade_vento(rs.getFloat(7));
+				m.setTemperatura_media(rs.getFloat(6));
+				//m.setCidade(rs.getString(6));
+				//m.setVelocidade_vento(rs.getFloat(7));
 				
 				medicaoResult.add(m);
 			}
@@ -106,19 +109,22 @@ public class MedicaoDAOImpl implements MedicaoDAO {
 		}
 		return null;
 	}
+	
 	@Override
 	public void updateMedicao(Medicao medicao) {
 		try{
 			Connection con = ConectarBanco.getConnection();
-			PreparedStatement stmt = con.prepareStatement("INSERT INTO MEDICAO (DATA, PRECIPITACAO, TEMPERATURA_MAXIMA, TEMPERATURA_MINIMA, CIDADE, VELOCIDADE_VENTO) "
-				+ "VALUES (?,?,?,?,?,?)");
+			PreparedStatement stmt = con.prepareStatement("INSERT INTO MEDICAO (DATA, PRECIPITACAO, TEMPERATURA_MAXIMA, TEMPERATURA_MINIMA, TEMERATURA_MEDIA) "
+				+ "VALUES (?,?,?,?,?)");
 			
-			stmt.setDate(1, new Date(2016-1900, 5, 14));
+			//stmt.setDate(1, new Date(2016-1900, 5, 14));
+			stmt.setDate(1, medicao.getData());
 			stmt.setFloat(2, medicao.getPrecipitacao());
 			stmt.setFloat(3, medicao.getTemperatura_maxima());
-			stmt.setFloat(4, medicao.getTemperatura_minima());			
-			stmt.setString(5, medicao.getCidade());
-			stmt.setFloat(6, medicao.getVelocidade_vento());
+			stmt.setFloat(4, medicao.getTemperatura_minima());
+			stmt.setFloat(5, medicao.getTemperatura_media());
+			//stmt.setString(5, medicao.getCidade());
+			//stmt.setFloat(6, medicao.getVelocidade_vento());
 			
 			stmt.execute();
 			stmt.close();
@@ -132,5 +138,7 @@ public class MedicaoDAOImpl implements MedicaoDAO {
 		// TODO Auto-generated method stub
 		
 	}
+
+	
 	
 }

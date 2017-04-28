@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class Neuronio {
 
-	private double[] entrada = {0, 0, 0, 0};; // Valores das entradas do neuronio
+	private double[] entrada = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};; // Valores das entradas do neuronio
 	private double[] saida; // Valor de saida = valor * peso
 	
 	private double valor; // Valor final do neuronio = sigmoide da soma das entradas

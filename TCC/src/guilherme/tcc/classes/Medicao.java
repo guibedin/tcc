@@ -9,6 +9,7 @@ public class Medicao {
 	private float precipitacao;
 	private float temperatura_maxima;
 	private float temperatura_minima;
+	private float temperatura_media;
 	private String cidade;
 	private float velocidade_vento;
 	
@@ -29,6 +30,12 @@ public class Medicao {
 	}
 	public void setTemperatura_minima(float temperatura_minima) {
 		this.temperatura_minima = temperatura_minima;
+	}
+	public float getTemperatura_media() {
+		return temperatura_media;
+	}
+	public void setTemperatura_media(float temperatura_media) {
+		this.temperatura_media = temperatura_media;
 	}
 	public float getVelocidade_vento() {
 		return velocidade_vento;

@@ -2,31 +2,13 @@ package guilherme.tcc.classes;
 
 public class Sinapse {
 
-	private Neuronio proximo;
-	private Neuronio anterior;
-	private double peso; // Peso da sinapse
+	private double[] pesosEntreCamadas; // Matriz de sinapses (pesos)
 	
-	public Sinapse(Neuronio prox){
-		this.proximo = prox;
-	}
+	private double[] dadosEntreCamadas;
+	private double[] dadosEntreCamadasTransformada;
 	
-	public Neuronio getProximo() {
-		return proximo;
-	}
-	public void setProximo(Neuronio proximo) {
-		this.proximo = proximo;
-	}
-	public Neuronio getAnterior() {
-		return anterior;
-	}
-	public void setAnterior(Neuronio anterior) {
-		this.anterior = anterior;
-	}
-	public double getPeso() {
-		return peso;
-	}
-	public void setPeso(double peso) {
-		this.peso = peso;
-	}
 	
+	public Sinapse(){
+		
+	}
 }
