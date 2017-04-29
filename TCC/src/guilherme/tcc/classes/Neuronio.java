@@ -38,14 +38,16 @@ public class Neuronio {
 	}
 	
 	
-	public void calcularValor(int tamanho){
+	public void calcularValor(int tamanho, boolean isCamadaSaida){
 		this.valor = 0;
 		
 		for(int i = 0; i < tamanho; i++){
 			this.valor += this.entrada[i];
 		}
 		
-		this.valor = sigmoide(this.valor);
+		if(isCamadaSaida){
+			this.valor = sigmoide(this.valor);
+		}
 	}
 	
 	public double[] calcularSaida(double[] pesos){

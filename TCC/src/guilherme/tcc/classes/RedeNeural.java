@@ -101,7 +101,6 @@ public class RedeNeural {
 		this.menorFitness = 0;
 		this.segundoMenorFitness = 0;
 
-		this.gerarArquivosDeTreino();
 		
 		//this.treinar();
 		//this.executar(populacao.get(maiorFitness));
@@ -138,6 +137,7 @@ public class RedeNeural {
 		
 		this.gerarPopulacaoInicial(entrada, saida);
 		
+		//while(true){
 		while(iteracoes < geracoes){
 			/*
 			this.maiorFitness = 0;
@@ -160,7 +160,7 @@ public class RedeNeural {
 					//System.out.println("MAIOR " + e.getElementoID() + " " + this.maiorFitness);
 					this.segundoMaiorFitness = this.maiorFitness;
 					this.maiorFitness = e.getElementoID();
-					//System.out.println("Geracao: " + (iteracoes+1) + "\nFitness: " + this.populacao.get(this.maiorFitness).getFitness());
+					System.out.println("Geracao: " + (iteracoes+1) + "\nFitness: " + this.populacao.get(this.maiorFitness).getFitness());
 				}
 				else{
 					if(fit < this.populacao.get(this.segundoMaiorFitness).getFitness()){
@@ -197,8 +197,8 @@ public class RedeNeural {
 				//return;
 			}
 			*/
-			if(this.populacao.get(this.maiorFitness).getFitness() < 0.01){
-				System.out.println("\n 0.005 RODADA DE TREINO: " + (iteracoes+1));
+			if(this.populacao.get(this.maiorFitness).getFitness() < 0.0001){
+				System.out.println("\n 0.0001 RODADA DE TREINO: " + (iteracoes+1));
 				//printarMatrizes(populacao.get(maiorFitness));
 				return iteracoes+1;
 			}
@@ -216,7 +216,6 @@ public class RedeNeural {
 			
 		}
 		return iteracoes;
-		
 	}
 	
 	public void crossover(){
@@ -264,6 +263,7 @@ public class RedeNeural {
 			for(int j = 0; j < tamanhoIntermediaria; j++){
 				if(r.nextDouble() < chanceCross){
 					e3.pesosEntradaIntermediaria[i][j] = auxiliar1[i][j];
+					//e3.pesosEntradaIntermediaria[i][j] = e3.pesosEntradaIntermediaria[i][j] + r.nextDouble();
 				}
 			}
 		}
@@ -274,6 +274,7 @@ public class RedeNeural {
 			for(int j = 0; j < tamanhoSaida; j++){
 				if(r.nextDouble() < chanceCross){
 					e3.pesosIntermediariaSaida[i][j] = auxiliar2[i][j];
+					//e3.pesosIntermediariaSaida[i][j] = e3.pesosIntermediariaSaida[i][j] + r.nextDouble();
 				}
 			}
 		}
@@ -283,6 +284,7 @@ public class RedeNeural {
 			for(int j = 0; j < tamanhoIntermediaria; j++){
 				if(r.nextDouble() < chanceCross){
 					e4.pesosEntradaIntermediaria[i][j] = auxiliar3[i][j];
+					//e4.pesosEntradaIntermediaria[i][j] = e4.pesosEntradaIntermediaria[i][j] + r.nextDouble();
 				}
 			}
 		}
@@ -293,6 +295,7 @@ public class RedeNeural {
 			for(int j = 0; j < tamanhoSaida; j++){
 				if(r.nextDouble() < chanceCross){
 					e4.pesosIntermediariaSaida[i][j] = auxiliar4[i][j];
+					//e4.pesosIntermediariaSaida[i][j] = e4.pesosIntermediariaSaida[i][j] + r.nextDouble();
 				}
 			}
 		}
@@ -559,7 +562,7 @@ public class RedeNeural {
 			// Iterar por cada neuronio da camada de Entrada, setando seu vetor de entrada e calculando sua saida			
 			for (Neuronio n : entrada.getNeuronios()){
 				n.setEntrada(e.dadosEntrada[i][j], i);
-				n.calcularValor(e.dadosEntrada[i].length - 1);
+				n.calcularValor(e.dadosEntrada[i].length, false);
 				e.dadosEntradaIntermediaria[j] = n.calcularSaida(e.pesosEntradaIntermediaria[j]);
 				/*
 				System.out.println("\nSaidas N" + (j+1));
@@ -580,7 +583,7 @@ public class RedeNeural {
 			// Iterar por cada neuronio da camada Intermediaria, setando seu vetor de entrada e calculando suas saidas
 			for(Neuronio n : intermediaria.getNeuronios()){
 				n.setEntrada(e.dadosEntradaIntermediariaTransformada[j]);
-				n.calcularValor(e.dadosEntradaIntermediariaTransformada[j].length);
+				n.calcularValor(e.dadosEntradaIntermediariaTransformada[j].length, false);
 				//System.out.print("\nValor N" + (j+3) + "\n" + n.getValor());
 				e.dadosIntermediariaSaida[j] = n.calcularSaida(e.pesosIntermediariaSaida[j]);
 				/*
@@ -602,7 +605,7 @@ public class RedeNeural {
 			// Iterar por cada neuronio da camada Saida, setando seu vetor de entrada e calculando suas saidas
 			for(Neuronio n : saida.getNeuronios()){
 				n.setEntrada(e.dadosIntermediariaSaidaTransformada[j]);
-				n.calcularValor(e.dadosIntermediariaSaidaTransformada[j].length);
+				n.calcularValor(e.dadosIntermediariaSaidaTransformada[j].length, true);
 				e.dadosSaida[i][j] = n.getValor();
 				/*
 				System.out.println("\nSaidas N" + (j+6));

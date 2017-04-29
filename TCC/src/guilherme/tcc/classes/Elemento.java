@@ -75,14 +75,16 @@ public class Elemento implements Comparable<Elemento> {
 			for(int j = 0; j < tamanhoSaida; j++){
 				//System.out.println("ERRO: " + dadosSaida[i][j] + " "  + saidaTreino[i][j]);
 				// Erro percentual medio
-				//erro += Math.abs((saidaTreino[i][j] - dadosSaida[i][j]))/saidaTreino[i][j];
+				if(saidaTreino[i][j] != 0){
+					erro += Math.abs((saidaTreino[i][j] - dadosSaida[i][j]))/saidaTreino[i][j];
+				}
 				
 				// Erro quadratico medio
-				erro += Math.pow((saidaTreino[i][j] - dadosSaida[i][j]), 2);
+				//erro += Math.pow((saidaTreino[i][j] - dadosSaida[i][j]), 2);
 			}
 		}
 		
-		this.fitness = erro/(numeroEntradas*tamanhoSaida);
+		this.fitness = (erro/(numeroEntradas*tamanhoSaida));
 		//System.out.println("FITNESS: " + this.fitness);
 	}
 	

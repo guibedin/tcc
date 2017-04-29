@@ -16,6 +16,7 @@ public class Main {
 		String saidaMaxima = "saidasMaxima.txt";
 		RedeNeural rede = new RedeNeural();
 		
+		rede.gerarArquivosDeTreino();
 		inicioTreino = System.currentTimeMillis(); // Tempo inicial de execucao
 		geracoes = rede.treinar(entradaMaxima, saidaMaxima); // Treina rede neural
 		fimTreino = System.currentTimeMillis(); // Tempo final de execucao
@@ -24,6 +25,7 @@ public class Main {
 		rede.desnormalizarDados(rede.getMaiorFitness(), 0);
 		Elemento e = rede.getMaiorFitness();
 		
+		
 		System.out.println("\nMatriz de Saida Desnormalizada:");
 		for(int i = 0; i < numeroEntradas; i++){
 			for(int j = 0; j < tamanhoSaida; j++){
@@ -31,6 +33,7 @@ public class Main {
 			}			
 		}
 		
+		System.out.println();
 		System.out.println("\nNumero de Entradas: " + numeroEntradas);
 		System.out.println("Tamanho Camada Intermediaria: " + tamanhoIntermediaria);
 		System.out.println("Tamanho Populacao: " + tamanhoPopulacao);
