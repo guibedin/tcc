@@ -5,10 +5,16 @@ import java.sql.Date;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+import org.python.antlr.ast.Slice.Slice___init___exposer;
+
+import com.mysql.jdbc.log.Slf4JLogger;
 
 import guilherme.tcc.DAO.MedicaoDAO;
 import guilherme.tcc.DAO.MedicaoDAOImpl;
@@ -32,10 +38,10 @@ public class RedeNeural {
 	
 	private Camada entrada; // Camada de entrada
 	private Camada intermediaria; // Camada intermediaria
-	private Camada intermediaria2;
 	private Camada saida; /// Camada de saida
 	
 	private List<Elemento> populacao;
+	private Elemento elementoExecucao;
 	
 	private int maiorFitness; // ID do elemento de maior fitness
 	private int segundoMaiorFitness; // ID do elemento com segundo maior fitness
@@ -52,6 +58,9 @@ public class RedeNeural {
 	private double mediasEntrada[][] = new double[tamanhoEntrada][numeroEntradas];
 	private double mediasEntradaInvertida[][] = new double[numeroEntradas][tamanhoEntrada];
 	
+	private double precipitacaoEntrada[][] = new double[tamanhoEntrada][numeroEntradas];
+	private double precipitacaoEntradaInvertida[][] = new double[numeroEntradas][tamanhoEntrada];
+	
 	// Matrizes para auxiliar a criacao do arquivo de saida de treino
 	private double maximasSaida[][] = new double[tamanhoSaida][numeroEntradas];
 	private double maximasSaidaInvertida[][] = new double[numeroEntradas][tamanhoSaida];
@@ -62,6 +71,9 @@ public class RedeNeural {
 	private double mediasSaida[][] = new double[tamanhoSaida][numeroEntradas];
 	private double mediasSaidaInvertida[][] = new double[numeroEntradas][tamanhoSaida];
 	
+	private double precipitacaoSaida[][] = new double[tamanhoEntrada][numeroEntradas];
+	private double precipitacaoSaidaInvertida[][] = new double[numeroEntradas][tamanhoEntrada];
+	
 	// Maximos e Minimos usados para normalizacao dos dados
 	private double minEntradaMax;
 	private double maxEntradaMax;
@@ -69,6 +81,8 @@ public class RedeNeural {
 	private double maxEntradaMin;
 	private double minEntradaMed;
 	private double maxEntradaMed;
+	private double minEntradaPrec;
+	private double maxEntradaPrec;
 	
 	private double minSaidaMax;
 	private double maxSaidaMax;
@@ -76,6 +90,8 @@ public class RedeNeural {
 	private double maxSaidaMin;
 	private double minSaidaMed;
 	private double maxSaidaMed;
+	private double minSaidaPrec;
+	private double maxSaidaPrec;
 	
 	public RedeNeural(){
 		// Instanciacao das camadas, passando o tamanho delas (numero de neuronios)
@@ -83,35 +99,13 @@ public class RedeNeural {
 		this.intermediaria = new Camada(tamanhoIntermediaria);
 		this.saida = new Camada(tamanhoSaida);
 		
-		// Definicao das camadas anteriors e proximas
-		// Isso e necessario para a definicao das sinapses
-		this.entrada.setAnterior(null);
-		this.entrada.setProxima(intermediaria);
-		
-		this.intermediaria.setAnterior(entrada);
-		this.intermediaria.setProxima(saida);
-		
-		this.saida.setAnterior(intermediaria);
-		this.saida.setProxima(null);
-		
+		// Inicializacao da populacao
 		this.populacao = new ArrayList<Elemento>();
 		
 		this.maiorFitness = 0;
 		this.segundoMaiorFitness = 0;
 		this.menorFitness = 0;
-		this.segundoMenorFitness = 0;
-
-		
-		//this.treinar();
-		//this.executar(populacao.get(maiorFitness));
-		//printarMatrizes(populacao.get(maiorFitness));
-		
-		/*for(Elemento e : this.populacao){
-			printarMatrizes(e);		
-		}*/
-		
-		//System.out.println("\nMatriz de Saidas:");
-	
+		this.segundoMenorFitness = 0;	
 	}
 	
 	/*
@@ -160,7 +154,7 @@ public class RedeNeural {
 					//System.out.println("MAIOR " + e.getElementoID() + " " + this.maiorFitness);
 					this.segundoMaiorFitness = this.maiorFitness;
 					this.maiorFitness = e.getElementoID();
-					System.out.println("Geracao: " + (iteracoes+1) + "\nFitness: " + this.populacao.get(this.maiorFitness).getFitness());
+					//System.out.println("Geracao: " + (iteracoes+1) + "\nFitness: " + this.populacao.get(this.maiorFitness).getFitness());
 				}
 				else{
 					if(fit < this.populacao.get(this.segundoMaiorFitness).getFitness()){
@@ -325,7 +319,7 @@ public class RedeNeural {
 		MedicaoDAO medicaoDAO = new MedicaoDAOImpl();
 		
 		// Inicialmente seleciona 3 meses inteiros (~90 linhas)
-		// Anos 2005 ate 2014 - Entradas de treino
+		// Anos 2004 ate 2013 - Entradas de treino
 		List<Medicao> m2004 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2004-01-01"), Date.valueOf("2004-03-31"));
 		List<Medicao> m2005 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2005-01-01"), Date.valueOf("2005-03-31"));
 		List<Medicao> m2006 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2006-01-01"), Date.valueOf("2006-03-31"));
@@ -356,10 +350,12 @@ public class RedeNeural {
 		maximasEntradaInvertida = this.transformaMatriz(maximasEntrada);
 		minimasEntradaInvertida = this.transformaMatriz(minimasEntrada);
 		mediasEntradaInvertida = this.transformaMatriz(mediasEntrada);
+		precipitacaoEntradaInvertida = this.transformaMatriz(precipitacaoEntrada);
 		
 		maximasSaidaInvertida = this.transformaMatriz(maximasSaida);
 		minimasSaidaInvertida = this.transformaMatriz(minimasSaida);
 		mediasSaidaInvertida = this.transformaMatriz(mediasSaida);
+		precipitacaoSaidaInvertida = this.transformaMatriz(precipitacaoSaida);
 		
 		this.normalizarDados();
 		
@@ -374,10 +370,12 @@ public class RedeNeural {
 			PrintWriter writerMaxima = new PrintWriter(path + "entradasMaxima.txt", "UTF-8");
 			PrintWriter writerMinima = new PrintWriter(path + "entradasMinima.txt", "UTF-8");
 			PrintWriter writerMedia = new PrintWriter(path + "entradasMedia.txt", "UTF-8");
+			PrintWriter writerPrecipitacao = new PrintWriter(path + "entradasPrecipitacao.txt", "UTF-8");
 			
 			PrintWriter writerMaximaSaida = new PrintWriter(path + "saidasMaxima.txt", "UTF-8");
 			PrintWriter writerMinimaSaida = new PrintWriter(path + "saidasMinima.txt", "UTF-8");
 			PrintWriter writerMediaSaida = new PrintWriter(path + "saidasMedia.txt", "UTF-8");
+			PrintWriter writerPrecipitacaoSaida = new PrintWriter(path + "saidasPrecipitacao.txt", "UTF-8");
 			
 			for(int i = 0; i < numeroEntradas; i++){
 				for(int j = 0; j < tamanhoEntrada; j++){
@@ -386,14 +384,18 @@ public class RedeNeural {
 				    writerMaxima.print(df.format(maximasEntradaInvertida[i][j]) + " ");
 				    writerMinima.print(df.format(minimasEntradaInvertida[i][j]) + " ");
 				    writerMedia.print(df.format(mediasEntradaInvertida[i][j]) + " ");
+				    writerPrecipitacao.print(df.format(precipitacaoEntradaInvertida[i][j]) + " ");
 				}
 				writerMaxima.println();
 				writerMinima.println();
 				writerMedia.println();
+				writerPrecipitacao.println();
 			}
 			writerMaxima.close();
 			writerMinima.close();
 			writerMedia.close();
+			writerPrecipitacao.close();
+			
 			for(int i = 0; i < numeroEntradas; i++){
 				for(int j = 0; j < tamanhoSaida; j++){
 					//System.out.print(String.format("%.2f", maximasInvertida[i][j]));
@@ -401,10 +403,12 @@ public class RedeNeural {
 					writerMaximaSaida.print(df.format(maximasSaidaInvertida[i][j]) + " ");
 					writerMinimaSaida.print(df.format(minimasSaidaInvertida[i][j]) + " ");
 				    writerMediaSaida.print(df.format(mediasSaidaInvertida[i][j]) + " ");
+				    writerPrecipitacaoSaida.print(df.format(precipitacaoSaidaInvertida[i][j]) + " ");
 				}
 				writerMaximaSaida.println();
 				writerMinimaSaida.println();
 				writerMediaSaida.println();
+				writerPrecipitacaoSaida.println();
 			}
 			
 			// Fecha todos os writers
@@ -412,6 +416,7 @@ public class RedeNeural {
 			writerMaximaSaida.close();
 			writerMinimaSaida.close();
 			writerMediaSaida.close();
+			writerPrecipitacaoSaida.close();
 			
 		}catch(Exception e){
 			e.printStackTrace();
@@ -426,6 +431,8 @@ public class RedeNeural {
 		maxEntradaMin = 0;
 		minEntradaMed = 100;
 		maxEntradaMed = 0;
+		minEntradaPrec = 100;
+		maxEntradaPrec = 0;
 		
 		minSaidaMax = 100;
 		maxSaidaMax = 0;
@@ -433,6 +440,8 @@ public class RedeNeural {
 		maxSaidaMin = 0;
 		minSaidaMed = 100;
 		maxSaidaMed = 0;
+		minSaidaPrec = 100;
+		maxSaidaPrec = 0;
 		
 		// Loop para determinar os valores minimos e maximos do dataset
 		// Esses valores sao usados na normalizacao
@@ -458,6 +467,13 @@ public class RedeNeural {
 				if(mediasEntradaInvertida[i][j] < minEntradaMed){
 					minEntradaMed = mediasEntradaInvertida[i][j];
 				}
+				if(precipitacaoEntradaInvertida[i][j] > maxEntradaPrec){
+					maxEntradaPrec = precipitacaoEntradaInvertida[i][j];
+				}
+				if(precipitacaoEntradaInvertida[i][j] < minEntradaPrec){
+					minEntradaPrec = precipitacaoEntradaInvertida[i][j];
+				}
+				
 			}
 			for(int j = 0; j < tamanhoSaida; j++){
 				if(maximasSaidaInvertida[i][j] > maxSaidaMax){
@@ -480,6 +496,12 @@ public class RedeNeural {
 				if(mediasSaidaInvertida[i][j] < minSaidaMed){
 					minSaidaMed = mediasSaidaInvertida[i][j];
 				}
+				if(precipitacaoSaidaInvertida[i][j] > maxSaidaPrec){
+					maxSaidaPrec = precipitacaoSaidaInvertida[i][j];
+				}
+				if(precipitacaoSaidaInvertida[i][j] < minSaidaPrec){
+					minSaidaPrec = precipitacaoSaidaInvertida[i][j];
+				}
 			}
 		}
 		//System.out.println(minEntradaMax + "\n" + maxEntradaMax);
@@ -489,6 +511,7 @@ public class RedeNeural {
 				maximasEntradaInvertida[i][j] = (maximasEntradaInvertida[i][j] - minEntradaMax)/(maxEntradaMax - minEntradaMax);
 				minimasEntradaInvertida[i][j] = (minimasEntradaInvertida[i][j] - minEntradaMin)/(maxEntradaMin - minEntradaMin);
 				mediasEntradaInvertida[i][j] = (mediasEntradaInvertida[i][j] - minEntradaMed)/(maxEntradaMed - minEntradaMed);
+				precipitacaoEntradaInvertida[i][j] = (precipitacaoEntradaInvertida[i][j] - minEntradaPrec)/(maxEntradaPrec - minEntradaPrec);
 			}
 		}
 		
@@ -497,14 +520,48 @@ public class RedeNeural {
 				maximasSaidaInvertida[i][j] = (maximasSaidaInvertida[i][j] - minSaidaMax)/(maxSaidaMax - minSaidaMax);
 				minimasSaidaInvertida[i][j] = (minimasSaidaInvertida[i][j] - minSaidaMin)/(maxSaidaMin - minSaidaMin);
 				mediasSaidaInvertida[i][j] = (mediasSaidaInvertida[i][j] - minSaidaMed)/(maxSaidaMed - minSaidaMed);
+				precipitacaoSaidaInvertida[i][j] = (precipitacaoSaidaInvertida[i][j] - minSaidaPrec)/(maxSaidaPrec - minSaidaPrec);
 			}
 		}
 		
 	}
 	
+	
+	public void salvarArquivosDePesos(String rede, Elemento e){
+		// Escreve arquivos de entrada e saida
+		try{
+			DecimalFormatSymbols ponto = new DecimalFormatSymbols(Locale.US);
+			ponto.setDecimalSeparator('.');
+			DecimalFormat df = new DecimalFormat("00.0000", ponto);
+			
+			String path = "/home/guilherme/Desktop/TCC Real/Semestre 2/ArquivosNN/Executar/";
+			PrintWriter writerEntradaIntermediaria = new PrintWriter(path + "pesosEntradaIntermediaria" + rede + ".txt", "UTF-8");
+			PrintWriter writerIntermediariaSaida = new PrintWriter(path + "pesosIntermediariaSaida" + rede + ".txt", "UTF-8");
+			
+			for(int i = 0; i < tamanhoEntrada; i++){
+				for(int j = 0; j < tamanhoIntermediaria; j++){
+					writerEntradaIntermediaria.print(e.pesosEntradaIntermediaria[i][j] + " ");
+				}
+				writerEntradaIntermediaria.println();
+			}
+			writerEntradaIntermediaria.close();
+			
+			for(int i = 0; i < tamanhoIntermediaria; i++){
+				for(int j = 0; j < tamanhoSaida; j++){
+					writerIntermediariaSaida.print(e.pesosIntermediariaSaida[i][j] + " ");
+				}
+				writerIntermediariaSaida.println();
+			}
+			writerIntermediariaSaida.close();
+			
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+	}
+	
 	// Desnomarliza os dados para serem apresentados na saida
 	// temp define qual tipo de temperatura
-	// 0 = Max, 1 = Min, 2 = Med
+	// 0 = Max, 1 = Min, 2 = Med, 3 = precipitacao
 	public void desnormalizarDados(Elemento e, int temp){
 		
 		for(int i = 0; i < numeroEntradas; i++){
@@ -518,6 +575,9 @@ public class RedeNeural {
 				if(temp == 2){
 					e.dadosSaida[i][j] = e.dadosSaida[i][j] *(maxSaidaMed - minSaidaMed) + minSaidaMed;
 				}
+				if(temp == 3){
+					e.dadosSaida[i][j] = e.dadosSaida[i][j] *(maxSaidaPrec - minSaidaPrec) + minSaidaPrec;
+				}
 			}
 		}
 	}
@@ -529,6 +589,7 @@ public class RedeNeural {
 				maximasEntrada[i][j] = m.getTemperatura_maxima();
 				minimasEntrada[i][j] = m.getTemperatura_minima();
 				mediasEntrada[i][j] = m.getTemperatura_media();
+				precipitacaoEntrada[i][j] = m.getPrecipitacao();
 			}
 			j++;
 		}
@@ -541,9 +602,86 @@ public class RedeNeural {
 				maximasSaida[i][j] = m.getTemperatura_maxima();
 				minimasSaida[i][j] = m.getTemperatura_minima();
 				mediasSaida[i][j] = m.getTemperatura_media();
+				precipitacaoSaida[i][j] = m.getPrecipitacao();
 			}
 			j++;
 		}
+	}
+	
+	// Metodo chamado pelo ServicePrevisao quando um request e' recebido
+	// Este metodo prepara a rede neural para ser executada, nao treinada
+	// Forma matriz de entrada -- selects no banco -- parte dificil
+	// Le arquivos de pesos salvos
+	// Retorna o elemento que sera usado na execucao
+	public Elemento prepararExecucao(Date data, String rede){
+		
+		// Instancia elemento de execucao, nao utiliza populacao
+		// Gera elemento com matrizes de peso
+		elementoExecucao = new Elemento(rede);
+		
+		// A partir da data, gerar matriz de entrada 1x10 (1 linha, 10 dias)
+		MedicaoDAO medicaoDAO = new MedicaoDAOImpl();
+		
+		
+		int anoPrevisao; // Ano da Data a ser prevista
+		int anoMedicao; // Ano da Data medida
+		Calendar calPrevisao = Calendar.getInstance(); // Calendario Data a ser prevista
+		Calendar calMedicao = Calendar.getInstance(); // Calenadrio Data medida
+		Date dataMedicao;
+		
+		calPrevisao.setTime(data); 
+		anoPrevisao = calPrevisao.get(Calendar.YEAR); 
+		
+		anoMedicao = anoPrevisao - 10; // Ultimos 10 anos
+		calMedicao.setTime(data);
+		calMedicao.set(Calendar.YEAR, anoMedicao); // Calendario do primeiro ano a ser medido (Ano a ser previsto - 11)
+		
+		ArrayList<List<Medicao>> medicoes = new ArrayList<List<Medicao>>();
+		int contadorPosicao = 0; // Conta posicao da lista
+		int contadorAno = 0; // Menor ano medido ate o momento
+		
+		for(int i = anoMedicao; i < anoPrevisao; i++, contadorPosicao++){
+			List<Medicao> m = new ArrayList<Medicao>();
+			
+			calMedicao.set(Calendar.YEAR, i);
+			dataMedicao = new Date(calMedicao.getTimeInMillis());
+			//System.out.println(dataMedicao.toString());
+			
+			m = medicaoDAO.getMedicaoByDate(dataMedicao);
+			
+			while(m.isEmpty()){
+				contadorAno++;
+				calMedicao.set(Calendar.YEAR, (anoMedicao - contadorAno));
+				dataMedicao = new Date(calMedicao.getTimeInMillis());
+				//System.out.println(dataMedicao.toString() + "CONTADOR ANO: " + contadorAno);
+				
+				m = medicaoDAO.getMedicaoByDate(dataMedicao);
+			}
+			
+			medicoes.add(m);
+			
+			//System.out.println("Ano: " + i + "\n" + medicoes.get(contadorPosicao).get(0).getTemperatura_maxima());
+		}
+		
+		int i = 0;
+		for(List<Medicao> m : medicoes){
+			if(rede.equals("Maxima")){
+				elementoExecucao.dadosEntrada[0][i] = m.get(0).getTemperatura_maxima();
+			}
+			if(rede.equals("Minima")){
+				elementoExecucao.dadosEntrada[0][i] = m.get(0).getTemperatura_minima();
+			}
+			if(rede.equals("Media")){
+				elementoExecucao.dadosEntrada[0][i] = m.get(0).getTemperatura_media();
+			}
+			if(rede.equals("Precipitacao")){
+				elementoExecucao.dadosEntrada[0][i] = m.get(0).getPrecipitacao();
+			}
+			i++;
+		}
+		
+		return elementoExecucao;
+		//return null;
 	}
 	
 	// Executa a rede neural - feedforward
@@ -553,7 +691,7 @@ public class RedeNeural {
 		int j = 0;
 		
 		// CALCULAR UMA LINHA DE ENTRADA DE CADA VEZ
-		for(i = 0; i < numeroEntradas; i++){
+		for(i = 0; i < numeroEntradasExecucao; i++){
 			//System.out.println("INICIO DA ENTRADA " + (i+1));
 			// Calcular sinapses Entrada -> Intermediaria
 			// Colocar o valor de entrada nos neuronios de entrada
@@ -639,25 +777,29 @@ public class RedeNeural {
 	
 	
 	public void printarMatrizes(Elemento e){
-		System.out.println("\nELEMENTO " + e.getElementoID());
+		System.out.println("ELEMENTO " + e.getElementoID());
+		
 		
 		// Printa Matriz de Entrada
 		System.out.println("Matriz de Entrada: ");
-		for(int i = 0; i < numeroEntradas; i++){
+		for(int i = 0; i < numeroEntradasExecucao; i++){
 			for(int j = 0; j < tamanhoEntrada; j++){				
 				System.out.print(e.dadosEntrada[i][j] + ", ");
 			}
 			System.out.println();
 		}
 		
-		// Printa Matriz de Saida Desejada
-		System.out.println("Matriz de Saida Desejada (Treino): ");
-		for(int i = 0; i < numeroEntradas; i++){
-			for(int j = 0; j < tamanhoSaida; j++){				
-				System.out.print(e.saidaTreino[i][j] + ", ");
+		if(treino){
+			// Printa Matriz de Saida Desejada
+			System.out.println("\nMatriz de Saida Desejada (Treino): ");
+			for(int i = 0; i < numeroEntradas; i++){
+				for(int j = 0; j < tamanhoSaida; j++){				
+					System.out.print(e.saidaTreino[i][j] + ", ");
+				}
+				System.out.println();
 			}
-			System.out.println();
 		}
+		
 		// Printa Matriz de Peso 1
 		System.out.println("\nMatriz de Peso 1 (Entrada -> Intermediaria):");
 		for(int i = 0; i < tamanhoEntrada; i++){
@@ -676,13 +818,15 @@ public class RedeNeural {
 			System.out.println();
 		}
 		
+		
 		// Printa Matriz da Saida
 		System.out.println("\nMatriz de Saida:");
-		for(int i = 0; i < numeroEntradas; i++){
+		for(int i = 0; i < numeroEntradasExecucao; i++){
 			for(int j = 0; j < tamanhoSaida; j++){
 				System.out.print(e.dadosSaida[i][j] + ", ");	
 			}			
 		}
+		System.out.println();
 	}
 	
 	public void iniciarSinapses(Sinapse[][] sin, int linhas, int colunas){

@@ -67,6 +67,69 @@ public class Elemento implements Comparable<Elemento> {
 		}*/
 	}
 	
+	// Inicia elemento de execucao, diferente da populacao
+	// Popula somente as matrizes de pesos, matriz de entrada e' populada antes
+	public Elemento(String rede){
+		
+		// Matriz de dados de entrada
+		this.dadosEntrada = new double[numeroEntradasExecucao][tamanhoEntrada];
+		// Matriz de dados de saida
+		this.dadosSaida = new double[numeroEntradasExecucao][tamanhoSaida];
+		
+		// Matrizes de saida de uma camada -> entrada da proxima
+		this.dadosEntradaIntermediaria = new double[tamanhoEntrada][tamanhoIntermediaria];
+		this.dadosIntermediariaSaida = new double[tamanhoIntermediaria][tamanhoSaida];
+		
+		
+		// Matrizes de peso das sinapses (entrada -> intermediaria / intermediaria -> saida)
+		this.pesosEntradaIntermediaria = new double[tamanhoEntrada][tamanhoIntermediaria];
+		this.pesosIntermediariaSaida = new double[tamanhoIntermediaria][tamanhoSaida];
+		
+		this.elementoID = 0;
+		String linha;
+		
+		// Abre arquivo passado como parametro
+		try{
+			int contador = 0;
+			
+			InputStream entradaIntermediariaIS = new FileInputStream("/home/guilherme/Desktop/TCC Real/Semestre 2/ArquivosNN/Executar/"
+					+ "pesosEntradaIntermediaria" + rede + ".txt");
+			InputStreamReader entradaIntermediariaISR = new InputStreamReader(entradaIntermediariaIS);
+			BufferedReader bufferEntradaIntermediaria = new BufferedReader(entradaIntermediariaISR);
+			
+			// Abre arquivo passado como parametro
+			InputStream intermediariaSaidaIS = new FileInputStream("/home/guilherme/Desktop/TCC Real/Semestre 2/ArquivosNN/Executar/"
+					+ "pesosIntermediariaSaida" + rede + ".txt");
+			InputStreamReader intermediariaSaidaISR = new InputStreamReader(intermediariaSaidaIS);
+			BufferedReader bufferIntermediariaSaida = new BufferedReader(intermediariaSaidaISR);
+			
+			// Comeca leitura do arquivo, linha por linha
+			while ((linha = bufferEntradaIntermediaria.readLine()) != null){
+				String[] numeros = linha.split("\\s+");
+				// Preenche matriz de peso 1 - Camada de entrada -> Intermediaria
+				for(int i = 0; i < tamanhoIntermediaria; i++){
+					this.pesosEntradaIntermediaria[contador][i] = Double.parseDouble(numeros[i]);
+				}
+				contador++;
+			}
+			
+			bufferEntradaIntermediaria.close();
+			contador = 0;
+			// Comeca leitura do arquivo, linha por linha
+			while ((linha = bufferIntermediariaSaida.readLine()) != null){
+				String[] numeros = linha.split("\\s+");
+				// Preenche matriz de peso 2 - Camada Intermediaria -> Saida
+				for(int i = 0; i < tamanhoSaida; i++){
+					this.pesosIntermediariaSaida[contador][i] = Double.parseDouble(numeros[i]);
+				}
+				contador++;
+			}
+			bufferIntermediariaSaida.close();
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+	}
+	
 	// Calcula fitness do elemento
 	public void calcularFitness(){
 		double erro = 0;
@@ -126,8 +189,6 @@ public class Elemento implements Comparable<Elemento> {
 			    }
 		    	writer.println();
 		    }
-		    //writer.println(gerarPeso() + " " + gerarPeso() + " " + gerarPeso());
-		    //writer.println(gerarPeso() + " " + gerarPeso() + " " + gerarPeso());
 		    writer.close();
 		    
 		    writer = new PrintWriter(path + "pesos2" + this.elementoID + ".txt", "UTF-8");
@@ -139,7 +200,7 @@ public class Elemento implements Comparable<Elemento> {
 		    }
 		    writer.close();
 		} catch (IOException e) {
-		   // do something
+		   e.printStackTrace();
 		}
 
 	}
@@ -167,7 +228,8 @@ public class Elemento implements Comparable<Elemento> {
 				
 				//If's para determinar o que fazer com cada linha do arquivo, de acordo com o seu nome
 				
-				if(arquivo.equals("entradasMaxima.txt")){
+				//if(arquivo.equals("entradasMaxima.txt")){
+				if(arquivo.contains("entradas")){
 					// Preenche matriz com dados de entrada
 					for(int i = 0; i < tamanhoEntrada; i++){
 						this.dadosEntrada[contador][i] = Double.parseDouble(numeros[i]);						
@@ -191,7 +253,8 @@ public class Elemento implements Comparable<Elemento> {
 					contador++;
 				}
 				
-				if(arquivo.equals("saidasMaxima.txt")){
+				//if(arquivo.equals("saidasMaxima.txt")){
+				if(arquivo.contains("saidas")){	
 					// Preenche matriz de peso 2 - Camada Intermediaria -> Saida
 					for(int i = 0; i < tamanhoSaida; i++){
 						this.saidaTreino[contador][i] = Double.parseDouble(numeros[i]);

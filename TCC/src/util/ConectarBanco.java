@@ -16,7 +16,7 @@ public class ConectarBanco {
 	private static String url = "jdbc:mysql://localhost:3306/TCC?user=root&password=senhatcc"; //MySQL
 	private static Connection con;
 	
-	
+	@SuppressWarnings("all")
 	public static Connection getConnection() {
 	try {
 	    Class.forName(driver);

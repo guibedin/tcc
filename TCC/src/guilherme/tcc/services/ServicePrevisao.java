@@ -10,6 +10,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import guilherme.tcc.classes.Previsao;
+import guilherme.tcc.classes.Elemento;
+import guilherme.tcc.classes.RedeNeural;
 
 // Plain old Java Object it does not extend as class or implements 
 // an interface
@@ -36,14 +38,45 @@ public class ServicePrevisao {
 		Previsao p = new Previsao();
 		String resultado;
 		
+		RedeNeural redeMaxima = new RedeNeural();
+		RedeNeural redeMinima = new RedeNeural();
+		RedeNeural redeMedia = new RedeNeural();
+		RedeNeural redePrecipitacao = new RedeNeural();
 	
+		Elemento eMaxima;
+		Elemento eMinima;
+		Elemento eMedia;
+		Elemento ePrecipitacao;
+		
+		
+		
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
 		try{
 			java.util.Date d = formatter.parse(data);
 			Date sqlDate = new Date(d.getTime());
-			resultado = p.fazerPrevisao(sqlDate);
-		}catch(Exception e){
-			e.printStackTrace();
+			
+			eMaxima = redeMaxima.prepararExecucao(sqlDate, "Maxima");
+			redeMaxima.executar(eMaxima);
+			
+			eMinima = redeMinima.prepararExecucao(sqlDate, "Minima");
+			redeMinima.executar(eMinima);
+			
+			eMedia = redeMedia.prepararExecucao(sqlDate, "Media");
+			redeMedia.executar(eMedia);
+			
+			ePrecipitacao = redePrecipitacao.prepararExecucao(sqlDate, "Precipitacao");
+			redePrecipitacao.executar(ePrecipitacao);
+			
+			p.setTemperatura_maxima(eMaxima.dadosSaida[0][0]);
+			p.setTemperatura_minima(eMinima.dadosSaida[0][0]);
+			p.setTemperatura_media(eMedia.dadosSaida[0][0]);
+			p.setPrecipitacao(ePrecipitacao.dadosSaida[0][0]);
+			
+			resultado = p.previsaoToJSONString();
+			
+			//resultado = p.fazerPrevisao(sqlDate);
+		}catch(Exception ex){
+			ex.printStackTrace();
 			return null;
 		}
 		System.out.println("Resultado retornado para cliente: " + resultado);

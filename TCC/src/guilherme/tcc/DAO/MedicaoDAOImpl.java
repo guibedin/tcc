@@ -49,11 +49,12 @@ public class MedicaoDAOImpl implements MedicaoDAO {
 		return null;
 	}
 
+	@SuppressWarnings("all")
 	@Override
 	public List<Medicao> getMedicaoByDate(Date data){
 		try{
 			Connection con = ConectarBanco.getConnection();
-			PreparedStatement stmt = con.prepareStatement("SELECT * FROM MEDICAO WHERE DATA = '?'");
+			PreparedStatement stmt = con.prepareStatement("SELECT * FROM MEDICAO WHERE DATA = ?");
 			stmt.setDate(1, data);
 			ResultSet rs = stmt.executeQuery();
 			List<Medicao> medicaoResult = new ArrayList<Medicao>();
@@ -119,10 +120,10 @@ public class MedicaoDAOImpl implements MedicaoDAO {
 			
 			//stmt.setDate(1, new Date(2016-1900, 5, 14));
 			stmt.setDate(1, medicao.getData());
-			stmt.setFloat(2, medicao.getPrecipitacao());
-			stmt.setFloat(3, medicao.getTemperatura_maxima());
-			stmt.setFloat(4, medicao.getTemperatura_minima());
-			stmt.setFloat(5, medicao.getTemperatura_media());
+			stmt.setDouble(2, medicao.getPrecipitacao());
+			stmt.setDouble(3, medicao.getTemperatura_maxima());
+			stmt.setDouble(4, medicao.getTemperatura_minima());
+			stmt.setDouble(5, medicao.getTemperatura_media());
 			//stmt.setString(5, medicao.getCidade());
 			//stmt.setFloat(6, medicao.getVelocidade_vento());
 			

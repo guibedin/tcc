@@ -29,8 +29,8 @@ public class PrevisaoDAOImpl implements PrevisaoDAO {
 				p.setPrecipitacao(rs.getFloat(3));
 				p.setTemperatura_maxima(rs.getFloat(4));
 				p.setTemperatura_minima(rs.getFloat(5));
-				p.setCidade(rs.getString(7));
-				p.setVelocidade_vento(rs.getFloat(8));
+				//p.setCidade(rs.getString(7));
+				//p.setVelocidade_vento(rs.getFloat(8));
 				
 				previsaoResult.add(p);
 			}
@@ -61,7 +61,7 @@ public class PrevisaoDAOImpl implements PrevisaoDAO {
 				p.setTemperatura_maxima(rs.getFloat(4));
 				p.setTemperatura_minima(rs.getFloat(5));
 				p.setTemperatura_media(rs.getFloat(6));
-				p.setCidade(rs.getString(7));
+				//p.setCidade(rs.getString(7));
 				//p.setVelocidade_vento(rs.getFloat(7));
 				
 				previsaoResult.add(p);
@@ -92,7 +92,7 @@ public class PrevisaoDAOImpl implements PrevisaoDAO {
 				p.setTemperatura_maxima(rs.getFloat(4));
 				p.setTemperatura_minima(rs.getFloat(5));
 				p.setTemperatura_media(rs.getFloat(6));
-				p.setCidade(rs.getString(7));
+				//p.setCidade(rs.getString(7));
 				//p.setVelocidade_vento(rs.getFloat(7));
 				
 				previsaoResult.add(p);
@@ -109,15 +109,15 @@ public class PrevisaoDAOImpl implements PrevisaoDAO {
 	public void updatePrevisao(Previsao previsao) {
 		try{
 			Connection con = ConectarBanco.getConnection();
-			PreparedStatement stmt = con.prepareStatement("INSERT INTO PREVISAO (DATA, PRECIPITACAO, TEMPERATURA_MAXIMA, TEMPERATURA_MINIMA, TEMPERATURA_MEDIA, CIDADE) "
+			PreparedStatement stmt = con.prepareStatement("INSERT INTO PREVISAO (DATA, PRECIPITACAO, TEMPERATURA_MAXIMA, TEMPERATURA_MINIMA, TEMPERATURA_MEDIA) "
 				+ "VALUES (?,?,?,?,?,?)");
 			
-			stmt.setDate(1, new Date(2016-1900, 5, 14));
-			stmt.setFloat(2, previsao.getPrecipitacao());
-			stmt.setFloat(3, previsao.getTemperatura_maxima());
-			stmt.setFloat(4, previsao.getTemperatura_minima());	
-			stmt.setFloat(5, previsao.getTemperatura_media());
-			stmt.setString(6, previsao.getCidade());
+			stmt.setDate(1, previsao.getData());
+			stmt.setDouble(2, previsao.getPrecipitacao());
+			stmt.setDouble(3, previsao.getTemperatura_maxima());
+			stmt.setDouble(4, previsao.getTemperatura_minima());	
+			stmt.setDouble(5, previsao.getTemperatura_media());
+			//stmt.setString(6, previsao.getCidade());
 			//stmt.setFloat(6, previsao.getVelocidade_vento());
 			
 			stmt.execute();
