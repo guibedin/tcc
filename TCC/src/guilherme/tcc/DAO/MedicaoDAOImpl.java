@@ -42,6 +42,7 @@ public class MedicaoDAOImpl implements MedicaoDAO {
 				medicaoResult.add(m);
 			}
 			stmt.close();
+			con.close();
 			return medicaoResult;
 		}catch (Exception e){
 			e.printStackTrace();
@@ -73,6 +74,7 @@ public class MedicaoDAOImpl implements MedicaoDAO {
 				medicaoResult.add(m);
 			}
 			stmt.close();
+			con.close();
 			return medicaoResult;
 		}catch (Exception e){
 			e.printStackTrace();
@@ -104,6 +106,7 @@ public class MedicaoDAOImpl implements MedicaoDAO {
 				medicaoResult.add(m);
 			}
 			stmt.close();
+			con.close();
 			return medicaoResult;
 		}catch (Exception e){
 			e.printStackTrace();
@@ -129,6 +132,7 @@ public class MedicaoDAOImpl implements MedicaoDAO {
 			
 			stmt.execute();
 			stmt.close();
+			con.close();
 		}catch (Exception e){
 			e.printStackTrace();
 		}

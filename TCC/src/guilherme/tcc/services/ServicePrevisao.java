@@ -1,7 +1,10 @@
 package guilherme.tcc.services;
 
 import java.sql.Date;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -48,25 +51,41 @@ public class ServicePrevisao {
 		Elemento eMedia;
 		Elemento ePrecipitacao;
 		
-		
-		
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+		DecimalFormatSymbols ponto = new DecimalFormatSymbols(Locale.US);
+		ponto.setDecimalSeparator('.');
+		DecimalFormat df = new DecimalFormat("00.0000", ponto);
 		try{
 			java.util.Date d = formatter.parse(data);
 			Date sqlDate = new Date(d.getTime());
 			
 			eMaxima = redeMaxima.prepararExecucao(sqlDate, "Maxima");
+			redeMaxima.normalizarDadosExecucao(eMaxima, "Maxima");
 			redeMaxima.executar(eMaxima);
+			redeMaxima.desnormalizarDados(eMaxima, 0);
+			redeMaxima.printarMatrizes(eMaxima);
+			
 			
 			eMinima = redeMinima.prepararExecucao(sqlDate, "Minima");
+			redeMinima.normalizarDadosExecucao(eMinima, "Minima");
 			redeMinima.executar(eMinima);
+			redeMinima.desnormalizarDados(eMinima, 1);
+			redeMinima.printarMatrizes(eMinima);
 			
 			eMedia = redeMedia.prepararExecucao(sqlDate, "Media");
+			redeMedia.normalizarDadosExecucao(eMedia, "Media");
 			redeMedia.executar(eMedia);
+			redeMedia.desnormalizarDados(eMedia, 2);
+			redeMedia.printarMatrizes(eMedia);
 			
 			ePrecipitacao = redePrecipitacao.prepararExecucao(sqlDate, "Precipitacao");
+			redePrecipitacao.normalizarDadosExecucao(ePrecipitacao, "Precipitacao");
 			redePrecipitacao.executar(ePrecipitacao);
+			redePrecipitacao.desnormalizarDados(ePrecipitacao, 3);
+			redePrecipitacao.printarMatrizes(ePrecipitacao);
 			
+			
+			p.setData(sqlDate);
 			p.setTemperatura_maxima(eMaxima.dadosSaida[0][0]);
 			p.setTemperatura_minima(eMinima.dadosSaida[0][0]);
 			p.setTemperatura_media(eMedia.dadosSaida[0][0]);

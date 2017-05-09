@@ -57,14 +57,6 @@ public class Elemento implements Comparable<Elemento> {
 		this.lerArquivos("pesos1" + elementoID + ".txt");
 		this.lerArquivos("pesos2" + elementoID + ".txt");
 		this.lerArquivos(saida);
-		/*
-		System.out.println("\nMatriz SaidaTreino:");
-		for(int i = 0; i < numeroEntradas; i++){
-			for(int j = 0; j < tamanhoSaida; j++){
-				System.out.print(this.saidaTreino[i][j] + ", ");
-			}
-			System.out.println();
-		}*/
 	}
 	
 	// Inicia elemento de execucao, diferente da populacao
@@ -138,12 +130,15 @@ public class Elemento implements Comparable<Elemento> {
 			for(int j = 0; j < tamanhoSaida; j++){
 				//System.out.println("ERRO: " + dadosSaida[i][j] + " "  + saidaTreino[i][j]);
 				// Erro percentual medio
-				if(saidaTreino[i][j] != 0){
-					erro += Math.abs((saidaTreino[i][j] - dadosSaida[i][j]))/saidaTreino[i][j];
+				if(!erroQuadratico){
+					if(saidaTreino[i][j] != 0){
+						erro += Math.abs(Math.abs((saidaTreino[i][j] - dadosSaida[i][j]))/saidaTreino[i][j]);
+					}
 				}
-				
-				// Erro quadratico medio
-				//erro += Math.pow((saidaTreino[i][j] - dadosSaida[i][j]), 2);
+				else{
+					// Erro quadratico medio
+					erro += Math.pow((saidaTreino[i][j] - dadosSaida[i][j]), 2);
+				}
 			}
 		}
 		
@@ -208,7 +203,12 @@ public class Elemento implements Comparable<Elemento> {
 	// Gera um peso aleatorio
 	public double gerarPeso(){
 		Random r = new Random();
-		return r.nextGaussian();
+		
+		if(tipoPeso){
+			return r.nextDouble() * 2 - 1;
+		}else{
+			return r.nextGaussian();
+		}
 	}
 	
 	
@@ -255,14 +255,14 @@ public class Elemento implements Comparable<Elemento> {
 				
 				//if(arquivo.equals("saidasMaxima.txt")){
 				if(arquivo.contains("saidas")){	
-					// Preenche matriz de peso 2 - Camada Intermediaria -> Saida
+					// Preenche matriz com dados de Saida de Treino
 					for(int i = 0; i < tamanhoSaida; i++){
 						this.saidaTreino[contador][i] = Double.parseDouble(numeros[i]);
 					}
 					contador++;
 				}		
 			}
-			
+			buffer.close();
 		}catch(Exception e){
 			e.printStackTrace();
 		}
