@@ -44,46 +44,96 @@ public class Main {
 		
 		
 		// Gera arquivos pra todas as redes
+
+		
 		redeMaxima.gerarArquivosDeTreino();
 		redeMinima.gerarArquivosDeTreino();
 		redeMedia.gerarArquivosDeTreino();
 		redePrecipitacao.gerarArquivosDeTreino();
 		
-		
-		System.out.println("Trienando rede: Temperatura Maxima");
-		inicioTreino = System.currentTimeMillis(); // Tempo inicial de execucao
-		geracoes = redeMaxima.treinar(entradaMaxima, saidaMaxima); // Treina rede neural Temp Maxima
-		fimTreino = System.currentTimeMillis(); // Tempo final de execucao
-		eMaxima = redeMaxima.getMaiorFitness();
-		printarTreino(redeMaxima, "Temp Maxima", 0, eMaxima);
-		redeMaxima.salvarArquivosDePesos("Maxima", eMaxima);
-
-		
-		System.out.println("Trienando rede: Temperatura Minima");
-		inicioTreino = System.currentTimeMillis(); // Tempo inicial de execucao
-		geracoes = redeMinima.treinar(entradaMinima, saidaMinima); // Treina rede neural Temp Minima
-		fimTreino = System.currentTimeMillis(); // Tempo final de execucao
-		eMinima = redeMinima.getMaiorFitness();
-		printarTreino(redeMinima, "Temp Minima", 1, eMinima);
-		redeMinima.salvarArquivosDePesos("Minima", eMinima);
-
-		
-		System.out.println("Trienando rede: Temperatura Media");
-		inicioTreino = System.currentTimeMillis(); // Tempo inicial de execucao
-		geracoes = redeMedia.treinar(entradaMedia, saidaMedia); // Treina rede neural Temp Media
-		fimTreino = System.currentTimeMillis(); // Tempo final de execucao
-		eMedia = redeMedia.getMaiorFitness();
-		printarTreino(redeMedia, "Temp Media", 2, eMedia);
-		redeMedia.salvarArquivosDePesos("Media", eMedia);
-		
-		System.out.println("Trienando rede: Precipitacao");
-		inicioTreino = System.currentTimeMillis(); // Tempo inicial de execucao
-		geracoes = redePrecipitacao.treinar(entradaPrecipitacao, saidaPrecipitacao); // Treina rede neural Precipitacao
-		fimTreino = System.currentTimeMillis(); // Tempo final de execucao
-		ePrecipitacao = redePrecipitacao.getMaiorFitness();
-		printarTreino(redePrecipitacao, "Precipitacao", 3, ePrecipitacao);	
-		redePrecipitacao.salvarArquivosDePesos("Precipitacao", ePrecipitacao);
-		
+		if(!genetico){
+			inicioTreino = System.currentTimeMillis();
+			Elemento e = redeMaxima.treinar(entradaMaxima, saidaMaxima);
+			fimTreino = System.currentTimeMillis();
+			redeMaxima.desnormalizarDados(e, 0);
+			System.out.println("Rede Treinada: Temperatura Maxima");
+			System.out.println("Numero de Entradas: " + numeroEntradas);
+			redeMaxima.printarMatrizes(e);
+			System.out.println("Erro Quadratico Medio final: " + e.getFitness());
+			System.out.println("\nTempo de execucao (s): " + (fimTreino - inicioTreino) / 1000);
+			redeMaxima.salvarArquivosDePesos("Maxima", e);
+			
+			inicioTreino = System.currentTimeMillis();
+			e = redeMinima.treinar(entradaMinima, saidaMinima);
+			fimTreino = System.currentTimeMillis();
+			redeMaxima.desnormalizarDados(e, 1);
+			System.out.println("Rede Treinada: Temperatura Minima");
+			System.out.println("Numero de Entradas: " + numeroEntradas);
+			redeMaxima.printarMatrizes(e);
+			System.out.println("Erro Quadratico Medio final: " + e.getFitness());
+			System.out.println("\nTempo de execucao (s): " + (fimTreino - inicioTreino) / 1000);
+			redeMaxima.salvarArquivosDePesos("Minima", e);
+			
+			inicioTreino = System.currentTimeMillis();
+			e = redeMaxima.treinar(entradaMaxima, saidaMaxima);
+			fimTreino = System.currentTimeMillis();
+			redeMedia.desnormalizarDados(e, 2);
+			System.out.println("Rede Treinada: Temperatura Media");
+			System.out.println("Numero de Entradas: " + numeroEntradas);
+			redeMaxima.printarMatrizes(e);
+			System.out.println("Erro Quadratico Medio final: " + e.getFitness());
+			System.out.println("\nTempo de execucao (s): " + (fimTreino - inicioTreino) / 1000);
+			redeMaxima.salvarArquivosDePesos("Media", e);
+			
+			inicioTreino = System.currentTimeMillis();
+			e = redePrecipitacao.treinar(entradaPrecipitacao, saidaPrecipitacao);
+			fimTreino = System.currentTimeMillis();
+			redeMaxima.desnormalizarDados(e, 3);
+			System.out.println("Rede Treinada: Precipitacao");
+			System.out.println("Numero de Entradas: " + numeroEntradas);
+			redeMaxima.printarMatrizes(e);
+			System.out.println("Erro Quadratico Medio final: " + e.getFitness());
+			System.out.println("\nTempo de execucao (s): " + (fimTreino - inicioTreino) / 1000);
+			redeMaxima.salvarArquivosDePesos("Precipitacao", e);
+		}
+		else{
+			System.out.println("Trienando rede: Temperatura Maxima");
+			inicioTreino = System.currentTimeMillis(); // Tempo inicial de execucao
+			redeMaxima.treinar(entradaMaxima, saidaMaxima); // Treina rede neural Temp Maxima
+			fimTreino = System.currentTimeMillis(); // Tempo final de execucao
+			eMaxima = redeMaxima.getMaiorFitness();
+			printarTreino(redeMaxima, "Temp Maxima", 0, eMaxima);
+			redeMaxima.salvarArquivosDePesos("Maxima", eMaxima);
+			
+			
+			System.out.println("Trienando rede: Temperatura Minima");
+			inicioTreino = System.currentTimeMillis(); // Tempo inicial de execucao
+			redeMinima.treinar(entradaMinima, saidaMinima); // Treina rede neural Temp Minima
+			fimTreino = System.currentTimeMillis(); // Tempo final de execucao
+			eMinima = redeMinima.getMaiorFitness();
+			printarTreino(redeMinima, "Temp Minima", 1, eMinima);
+			redeMinima.salvarArquivosDePesos("Minima", eMinima);
+	
+			
+			System.out.println("Trienando rede: Temperatura Media");
+			inicioTreino = System.currentTimeMillis(); // Tempo inicial de execucao
+			redeMedia.treinar(entradaMedia, saidaMedia); // Treina rede neural Temp Media
+			fimTreino = System.currentTimeMillis(); // Tempo final de execucao
+			eMedia = redeMedia.getMaiorFitness();
+			printarTreino(redeMedia, "Temp Media", 2, eMedia);
+			redeMedia.salvarArquivosDePesos("Media", eMedia);
+			
+			
+			/*
+			System.out.println("Trienando rede: Precipitacao");
+			inicioTreino = System.currentTimeMillis(); // Tempo inicial de execucao
+			geracoes = redePrecipitacao.treinar(entradaPrecipitacao, saidaPrecipitacao); // Treina rede neural Precipitacao
+			fimTreino = System.currentTimeMillis(); // Tempo final de execucao
+			ePrecipitacao = redePrecipitacao.getMaiorFitness();
+			printarTreino(redePrecipitacao, "Precipitacao", 3, ePrecipitacao);	
+			redePrecipitacao.salvarArquivosDePesos("Precipitacao", ePrecipitacao);
+			*/
+		}
 	}
 	
 	private static void printarTreino(RedeNeural rede, String treino, int temp, Elemento e){
@@ -95,7 +145,7 @@ public class Main {
 		}else{
 			System.out.println("Tipo de normalizacao: Minimo Maximo");
 		}
-		if(tipoPeso){
+		if(!pesoGaussian){
 			System.out.println("Tipo de Peso: nextDouble");
 		}else{
 			System.out.println("Tipo de Peso: nextGaussian");

@@ -37,18 +37,20 @@ public class Neuronio {
 	
 	// Calcula o valor do neuronio
 	// Esse valor eh multiplicado pelo vetor de pesos para calcular o vetor de saidas do neuronio 
-	public void calcularValor(int tamanho, boolean isCamadaSaida){
+	public void calcularValor(int tamanho, boolean isCamadaEntrada, double bias){
 		this.valor = 0;
 		
 		for(int i = 0; i < tamanho; i++){
 			this.valor += this.entrada[i];
 		}
 		
-		if(isCamadaSaida){
+		if(!isCamadaEntrada){
+			//System.out.println(bias);
+			//this.valor += bias;
 			this.valor = sigmoide(this.valor);
 		}
 	}
-	
+
 	// Calcula o vetor de saida do neuronio
 	// Possui 1 saida para cada neuronio da proxima camada
 	public double[] calcularSaida(double[] pesos){
@@ -60,6 +62,7 @@ public class Neuronio {
 		}
 		return this.saida;
 	}
+	
 	
 	public double sigmoide(double valor){
 		return 1 / (1 + Math.exp(-valor));

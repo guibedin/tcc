@@ -12,8 +12,19 @@ import static util.Constantes.*;
 
 public class Elemento implements Comparable<Elemento> {
 
-	public double[][] pesosEntradaIntermediaria; // Matriz de sinapses (pesos)
-	public double[][] pesosIntermediariaSaida; // Matriz de sinapses (pesos)
+	 // Matriz de sinapses (pesos)
+	public double[][] pesosEntradaIntermediaria;
+	public double[][] pesosIntermediariaSaida; 
+	
+	public double[][] pesosEntradaIntermediariaDelta;
+	public double[][] pesosIntermediariaSaidaDelta;
+	
+	public double[][] pesosEntradaIntermediariaDeltaAntigo;
+	public double[][] pesosIntermediariaSaidaDeltaAntigo;
+	
+	// Bias da rede
+	public double biasIntermediaria; 
+	public double biasSaida;
 	
 	public double[][] dadosEntrada; // Dados de entrada da rede
 	public double[][] dadosSaida; // Dados de saida da rede
@@ -22,8 +33,17 @@ public class Elemento implements Comparable<Elemento> {
 	
 	public double[][] dadosEntradaIntermediaria;
 	public double[][] dadosEntradaIntermediariaTransformada;
+	
+	//public double[][] dadosEntradaIntermediariaBP;
+	public double[] dadosEntradaIntermediariaBP;
+	public double[][] dadosEntradaIntermediariaBPTransformada;
+	
 	public double[][] dadosIntermediariaSaida;
 	public double[][] dadosIntermediariaSaidaTransformada;
+	
+	//public double[][] dadosIntermediariaSaidaBP;
+	public double[] dadosIntermediariaSaidaBP;
+	public double[][] dadosIntermediariaSaidaBPTransformada;
 	
 	private double fitness;
 	private int elementoID;
@@ -43,19 +63,33 @@ public class Elemento implements Comparable<Elemento> {
 		this.dadosEntradaIntermediaria = new double[tamanhoEntrada][tamanhoIntermediaria];
 		this.dadosIntermediariaSaida = new double[tamanhoIntermediaria][tamanhoSaida];
 		
+		// Matrizes Backpropagation
+		//this.dadosEntradaIntermediariaBP = new double[tamanhoEntrada][tamanhoIntermediaria];
+		this.dadosEntradaIntermediariaBP = new double[tamanhoEntrada];
+		this.dadosEntradaIntermediariaBPTransformada = new double[tamanhoIntermediaria][tamanhoEntrada];
+		
+		//this.dadosIntermediariaSaidaBP = new double[tamanhoIntermediaria][tamanhoSaida];
+		this.dadosIntermediariaSaidaBP = new double[tamanhoIntermediaria];
+		this.dadosIntermediariaSaidaBPTransformada = new double[tamanhoSaida][tamanhoIntermediaria];
 		
 		// Matrizes de peso das sinapses (entrada -> intermediaria / intermediaria -> saida)
 		this.pesosEntradaIntermediaria = new double[tamanhoEntrada][tamanhoIntermediaria];
 		this.pesosIntermediariaSaida = new double[tamanhoIntermediaria][tamanhoSaida];
+
+		this.pesosEntradaIntermediariaDelta = new double[tamanhoEntrada][tamanhoIntermediaria];
+		this.pesosIntermediariaSaidaDelta = new double[tamanhoIntermediaria][tamanhoSaida];
+		this.pesosEntradaIntermediariaDeltaAntigo = new double[tamanhoEntrada][tamanhoIntermediaria];
+		this.pesosIntermediariaSaidaDeltaAntigo = new double[tamanhoIntermediaria][tamanhoSaida];
 		
 		this.elementoID = elementoID;
 		
 		this.gerarArquivosDePesos();
 		
-		
 		this.lerArquivos(entrada);
 		this.lerArquivos("pesos1" + elementoID + ".txt");
 		this.lerArquivos("pesos2" + elementoID + ".txt");
+		//this.lerArquivos("biasIntermediaria" + elementoID + ".txt");
+		//this.lerArquivos("biasSaida" + elementoID + ".txt");
 		this.lerArquivos(saida);
 	}
 	
@@ -117,6 +151,35 @@ public class Elemento implements Comparable<Elemento> {
 				contador++;
 			}
 			bufferIntermediariaSaida.close();
+			
+			// Arquivos de BIAS
+			InputStream biasIntermediariaIS = new FileInputStream("/home/guilherme/Desktop/TCC Real/Semestre 2/ArquivosNN/Executar/"
+					+ "biasIntermediaria" + rede + ".txt");
+			InputStreamReader biasIntermediariaISR = new InputStreamReader(biasIntermediariaIS);
+			BufferedReader bufferBiasIntermediaria = new BufferedReader(biasIntermediariaISR);
+			
+			// Abre arquivo passado como parametro
+			InputStream biasSaidaIS = new FileInputStream("/home/guilherme/Desktop/TCC Real/Semestre 2/ArquivosNN/Executar/"
+					+ "biasSaida" + rede + ".txt");
+			InputStreamReader biasSaidaISR = new InputStreamReader(biasSaidaIS);
+			BufferedReader bufferBiasSaida = new BufferedReader(biasSaidaISR);
+			
+			
+			// Comeca leitura do arquivo, linha por linha
+			while ((linha = bufferBiasIntermediaria.readLine()) != null){
+				String[] numeros = linha.split("\\s+");
+				// Preenche vetor Bias Intermediaria
+				this.biasIntermediaria = Double.parseDouble(numeros[0]);				
+			}
+			bufferBiasIntermediaria.close();
+			
+			// Comeca leitura do arquivo, linha por linha
+			while ((linha = bufferBiasSaida.readLine()) != null){
+				String[] numeros = linha.split("\\s+");
+				// Preenche vetor Bias Saida
+				this.biasSaida = Double.parseDouble(numeros[0]);			
+			}
+			bufferBiasSaida.close();
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
@@ -154,24 +217,34 @@ public class Elemento implements Comparable<Elemento> {
 		for(int i = 0; i < tamanhoEntrada; i++){
 			for(int j = 0; j < tamanhoIntermediaria; j++){
 				if(r.nextDouble() < chanceMutacao){
-					this.pesosEntradaIntermediaria[i][j] = this.gerarPeso();
+					this.pesosEntradaIntermediaria[i][j] -=  this.gerarPeso();
 					//System.out.println("mutou1");
 				}
 			}
+		}
+		
+		// Muta bias Intermediaria
+		if(r.nextDouble() < chanceMutacao){
+			this.biasIntermediaria -= this.gerarPeso();
 		}
 		
 		// Muta matriz de peso 2 (Intermediaria -> Saida)
 		for(int i = 0; i < tamanhoIntermediaria; i++){
 			for(int j = 0; j < tamanhoSaida; j++){
 				if(r.nextDouble() < chanceMutacao){
-					this.pesosIntermediariaSaida[i][j] = this.gerarPeso();
+					this.pesosIntermediariaSaida[i][j] -=  this.gerarPeso();
 					//System.out.println("mutou2");
 				}
 			}
 		}
+		
+		// Muta bias Saida
+		if(r.nextDouble() < chanceMutacao){
+			this.biasSaida -=  this.gerarPeso();
+		}
 	}
 	
-	// Cria arquivos de pesos
+	// Cria arquivos de pesos e bias
 	public void gerarArquivosDePesos(){
 		
 		String path = "/home/guilherme/Desktop/TCC Real/Semestre 2/ArquivosNN/Treinamento/";
@@ -186,6 +259,11 @@ public class Elemento implements Comparable<Elemento> {
 		    }
 		    writer.close();
 		    
+		    // Bias Intermediaria
+		    writer = new PrintWriter(path + "biasIntermediaria" + this.elementoID + ".txt", "UTF-8");
+		    writer.print(gerarPeso());
+		    writer.close();
+		    
 		    writer = new PrintWriter(path + "pesos2" + this.elementoID + ".txt", "UTF-8");
 		    for(int i = 0; i < tamanhoIntermediaria; i++){
 		    	for(int j = 0; j < tamanhoSaida; j++){
@@ -194,6 +272,12 @@ public class Elemento implements Comparable<Elemento> {
 		    	writer.println();
 		    }
 		    writer.close();
+		    
+		    // Bias Saida
+		    writer = new PrintWriter(path + "biasSaida" + this.elementoID + ".txt", "UTF-8");
+		    writer.print(gerarPeso());
+		    writer.close();
+		    
 		} catch (IOException e) {
 		   e.printStackTrace();
 		}
@@ -204,7 +288,7 @@ public class Elemento implements Comparable<Elemento> {
 	public double gerarPeso(){
 		Random r = new Random();
 		
-		if(tipoPeso){
+		if(!pesoGaussian){
 			return r.nextDouble() * 2 - 1;
 		}else{
 			return r.nextGaussian();
@@ -251,6 +335,14 @@ public class Elemento implements Comparable<Elemento> {
 						this.pesosIntermediariaSaida[contador][i] = Double.parseDouble(numeros[i]);
 					}
 					contador++;
+				}
+				
+				if(arquivo.equals("biasIntermediaria" + this.elementoID + ".txt")){
+					this.biasIntermediaria = Double.parseDouble(numeros[0]);					
+				}
+				
+				if(arquivo.equals("biasSaida" + this.elementoID + ".txt")){
+					this.biasSaida = Double.parseDouble(numeros[0]);					
 				}
 				
 				//if(arquivo.equals("saidasMaxima.txt")){

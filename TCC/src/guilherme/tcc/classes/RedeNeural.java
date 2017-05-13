@@ -199,87 +199,80 @@ public class RedeNeural {
 	 * 
 	 * Retorna numero de rodadas de treino
 	 */
-	public int treinar(String entrada, String saida){
+	public Elemento treinar(String entrada, String saida){
 		double fit; // Valor do fitness
 		int iteracoes = 0;
 		
-		this.gerarPopulacaoInicial(entrada, saida);
 		
-		//while(true){
-		while(iteracoes < geracoes){
-			/*
-			this.maiorFitness = 0;
-			this.segundoMaiorFitness = 0;
-			*/
-			this.menorFitness = 0;
-			this.segundoMenorFitness = 0;
-			 
+		
+		if(genetico){
+			this.gerarPopulacaoInicial(entrada, saida);
 			
-			//System.out.println("RODADA DE TREINO: " + (iteracoes+1));
-			// Primeira parte - executar a rede para todo elemento, definindo os 2 com maior fitness
-			for(Elemento e : this.populacao){
-				//System.out.println("ELEMENTO: " + e.getElementoID());
-				this.executar(e); // Executa rede calculando saidas do elemento
-				e.calcularFitness(); // Calucla fitness do elemento
-				fit = e.getFitness(); // Pega fitness do elemento
+			while(iteracoes < geracoes){
+				/*
+				this.maiorFitness = 0;
+				this.segundoMaiorFitness = 0;
+				*/
+				this.menorFitness = 0;
+				this.segundoMenorFitness = 0;
+				 
 				
-				// If's para determinar os 2 elementos com maior fitness - serao usados para crossover
-				if(fit < this.populacao.get(this.maiorFitness).getFitness()){
-					//System.out.println("MAIOR " + e.getElementoID() + " " + this.maiorFitness);
-					this.segundoMaiorFitness = this.maiorFitness;
-					this.maiorFitness = e.getElementoID();
-					//System.out.println("Geracao: " + (iteracoes+1) + "\nFitness: " + this.populacao.get(this.maiorFitness).getFitness());
-				}
-				else{
-					if(fit < this.populacao.get(this.segundoMaiorFitness).getFitness()){
-						//System.out.println("SEGUNDO MAIOR " + e.getElementoID());
-						this.segundoMaiorFitness = e.getElementoID();
+				//System.out.println("RODADA DE TREINO: " + (iteracoes+1));
+				// Primeira parte - executar a rede para todo elemento, definindo os 2 com maior fitness
+				for(Elemento e : this.populacao){
+					//System.out.println("ELEMENTO: " + e.getElementoID());
+					this.executar(e); // Executa rede calculando saidas do elemento
+					e.calcularFitness(); // Calucla fitness do elemento
+					fit = e.getFitness(); // Pega fitness do elemento
+					
+					// If's para determinar os 2 elementos com maior fitness - serao usados para crossover
+					if(fit < this.populacao.get(this.maiorFitness).getFitness()){
+						//System.out.println("MAIOR " + e.getElementoID() + " " + this.maiorFitness);
+						this.segundoMaiorFitness = this.maiorFitness;
+						this.maiorFitness = e.getElementoID();
+						//System.out.println("Geracao: " + (iteracoes+1) + "\nFitness: " + this.populacao.get(this.maiorFitness).getFitness());
+					}
+					else{
+						if(fit < this.populacao.get(this.segundoMaiorFitness).getFitness()){
+							//System.out.println("SEGUNDO MAIOR " + e.getElementoID());
+							this.segundoMaiorFitness = e.getElementoID();
+						}
+					}
+					// If's para determinar os elementos com menor fitness
+					if(fit > this.populacao.get(this.menorFitness).getFitness()){
+						//System.out.println("MENOR " + e.getElementoID() + " " + this.menorFitness);
+						this.segundoMenorFitness = this.menorFitness;
+						this.menorFitness = e.getElementoID();
+					}else{
+						if(fit > this.populacao.get(this.segundoMenorFitness).getFitness()){
+							//System.out.println("SEGUNDO MENOR " + e.getElementoID());
+							this.segundoMenorFitness = e.getElementoID();
+						}
 					}
 				}
-				// If's para determinar os elementos com menor fitness
-				if(fit > this.populacao.get(this.menorFitness).getFitness()){
-					//System.out.println("MENOR " + e.getElementoID() + " " + this.menorFitness);
-					this.segundoMenorFitness = this.menorFitness;
-					this.menorFitness = e.getElementoID();
-				}else{
-					if(fit > this.populacao.get(this.segundoMenorFitness).getFitness()){
-						//System.out.println("SEGUNDO MENOR " + e.getElementoID());
-						this.segundoMenorFitness = e.getElementoID();
-					}
-				}
+			
 				
-			}
-			
-			/*
-			System.out.println("Maior Fitness: " + populacao.get(maiorFitness).getFitness() + " = Elemento: " + populacao.get(maiorFitness).getElementoID());
-			System.out.println("Segundo Maior Fitness: " + populacao.get(segundoMaiorFitness).getFitness() + " = Elemento: " + populacao.get(segundoMaiorFitness).getElementoID());
-			System.out.println("Menor Fitness: " + populacao.get(menorFitness).getFitness() + " = Elemento: " + populacao.get(menorFitness).getElementoID());
-			System.out.println("Segundo Menor Fitness: " + populacao.get(segundoMenorFitness).getFitness()+ " = Elemento: " + populacao.get(segundoMenorFitness).getElementoID());
-			*/
-			
-			iteracoes++;
-			// Condicao de parada
-			/*
-			if(populacao.get(maiorFitness).getFitness() < 0.00018){
-				System.out.println("\n 0.00018 RODADA DE TREINO: " + (iteracoes+1));
-				//return;
-			}
-			
-			if(this.populacao.get(this.maiorFitness).getFitness() < 0.0001){
-				System.out.println("\n 0.0001 RODADA DE TREINO: " + (iteracoes+1));
-				//printarMatrizes(populacao.get(maiorFitness));
-				return iteracoes+1;
-			}
-			*/
-			
-			// CrossOver e Mutacao - Treinamento via ALgoritmo Genetico
-			if(genetico){
+				/*
+				System.out.println("Maior Fitness: " + populacao.get(maiorFitness).getFitness() + " = Elemento: " + populacao.get(maiorFitness).getElementoID());
+				System.out.println("Segundo Maior Fitness: " + populacao.get(segundoMaiorFitness).getFitness() + " = Elemento: " + populacao.get(segundoMaiorFitness).getElementoID());
+				System.out.println("Menor Fitness: " + populacao.get(menorFitness).getFitness() + " = Elemento: " + populacao.get(menorFitness).getElementoID());
+				System.out.println("Segundo Menor Fitness: " + populacao.get(segundoMenorFitness).getFitness()+ " = Elemento: " + populacao.get(segundoMenorFitness).getElementoID());
+				*/
+				
+				iteracoes++;
+				// Condicao de parada
+				/*
+				if(populacao.get(maiorFitness).getFitness() < 0.00018){
+					System.out.println("\n 0.00018 RODADA DE TREINO: " + (iteracoes+1));
+					//return;
+				}
+				*/
+				
 				this.crossover();
-				
 				// Mutacao - nao afeta os elemenots de maior fitness
 				for(Elemento e : this.populacao){
-					if(e.getElementoID() != this.maiorFitness && e.getElementoID() != this.segundoMaiorFitness //){
-							&& e.getElementoID() != menorFitness && e.getElementoID() != segundoMenorFitness){
+					if(e.getElementoID() != this.maiorFitness && e.getElementoID() != this.segundoMaiorFitness ){
+							//&& e.getElementoID() != menorFitness && e.getElementoID() != segundoMenorFitness){
 						e.mutacao();
 					}
 				}
@@ -287,13 +280,360 @@ public class RedeNeural {
 				if(iteracoes%5000 == 0){
 					System.out.println("Geracao: " + iteracoes);
 				}
-			}else{ // Treinamento via backpropagation
-				this.backpropagation();
-			}			
-		}
-		return iteracoes;
+			}
+			return null;
+			//return e;
+			//return iteracoes;
+		}else{ // Treinamento via backpropagation
+			Elemento e = new Elemento(0, entrada, saida);
+			this.executar(e);
+			return e;
+			//return iteracoes;
+		}			
 	}
 	
+	
+	
+	public double derivadaValorSigmoide(double valor){
+		return valor*(1 - valor);
+	}
+	
+	public double derivadaSigmoide(double valor){
+		return Math.exp(-valor)/Math.pow((1 + Math.exp(-valor)), 2);
+	}
+	
+	public void backpropagation(Elemento e, int entrada){
+		/*
+		int i = 0;
+        for (Neuron n : outputLayer) {
+            ArrayList<Connection> connections = n.getAllInConnections();
+            for (Connection con : connections) {
+                double ak = n.getOutput();
+                double ai = con.leftNeuron.getOutput();
+                double desiredOutput = expectedOutput[i];
+ 
+                double partialDerivative = -ak * (1 - ak) * ai
+                        * (desiredOutput - ak);
+                double deltaWeight = -learningRate * partialDerivative;
+                double newWeight = con.getWeight() + deltaWeight;
+                con.setDeltaWeight(deltaWeight);
+                con.setWeight(newWeight + momentum * con.getPrevDeltaWeight());
+            }
+            i++;
+        }
+ 		*/
+		
+		//System.out.println("SAIDA:");
+		for(Neuronio n : saida.getNeuronios()){
+			for(int i = 0; i < tamanhoIntermediaria; i++){
+				for(int j = 0; j < tamanhoSaida; j++){
+					double ak = n.getValor();
+					double ai = e.dadosIntermediariaSaidaBP[i]; // MUDAR ESSA PARTE?????
+					
+					double derivadaParcial = -ak * (1 - ak) * ai *(e.saidaTreino[entrada][j] - ak);
+					double deltaPeso = -learningRate * derivadaParcial;
+					e.pesosIntermediariaSaidaDeltaAntigo[i][j] = e.pesosIntermediariaSaidaDelta[i][j];
+					e.pesosIntermediariaSaidaDelta[i][j] = deltaPeso;
+					
+					double novoPeso = e.pesosIntermediariaSaida[i][j] + deltaPeso;
+					double antigoDelta = e.pesosIntermediariaSaidaDeltaAntigo[i][j];
+					
+					double antigoPeso = e.pesosIntermediariaSaida[i][j];
+					e.pesosIntermediariaSaida[i][j] = (novoPeso + momento * antigoDelta);
+					
+					// L2
+					//e.pesosIntermediariaSaida[i][j] *= 1 - (learningRate * lambda);
+					//e.pesosIntermediariaSaida[i][j] -= learningRate * derivadaParcial;
+					
+					/*
+					if(i == 0 && j == 0){
+						System.out.println(String.format("dadosIntermediariaSaida[%d][%d]: %f"
+								, i, j, e.dadosIntermediariaSaidaTransformada[j][i]));
+						
+						System.out.println(String.format("ak[%d][%d]: %f\nai[%d][%d]: %f\nSaidaTreino[%d][%d]: %f"
+								, i, j, ak, i, j, ai, entrada, j, e.saidaTreino[entrada][j]));
+						
+						System.out.println(String.format("Derivada Parcial[%d][%d]: %f", i, j, derivadaParcial));
+						System.out.println(String.format("deltaPeso[%d][%d]: %f", i, j, deltaPeso));
+						System.out.println(String.format("antigoDelta[%d][%d]: %f", i, j, antigoDelta));
+						System.out.println(String.format("antigoPeso[%d][%d]: %f", i, j, antigoPeso));
+						System.out.println(String.format("novoPeso[%d][%d]: %f", i, j, novoPeso));
+						System.out.println();
+					}*/
+				}				
+			}
+			
+		}
+		
+		/*
+        // update weights for the hidden layer
+        for (Neuron n : hiddenLayer) {
+            ArrayList<Connection> connections = n.getAllInConnections();
+            for (Connection con : connections) {
+                double aj = n.getOutput();
+                double ai = con.leftNeuron.getOutput();
+                double sumKoutputs = 0;
+                int j = 0;
+                for (Neuron out_neu : outputLayer) {
+                    double wjk = out_neu.getConnection(n.id).getWeight();
+                    double desiredOutput = (double) expectedOutput[j];
+                    double ak = out_neu.getOutput();
+                    j++;
+                    sumKoutputs = sumKoutputs
+                            + (-(desiredOutput - ak) * ak * (1 - ak) * wjk);
+                }
+ 
+                double partialDerivative = aj * (1 - aj) * ai * sumKoutputs;
+                double deltaWeight = -learningRate * partialDerivative;
+                double newWeight = con.getWeight() + deltaWeight;
+                con.setDeltaWeight(deltaWeight);
+                con.setWeight(newWeight + momentum * con.getPrevDeltaWeight());
+            }
+        }
+		*/
+		
+		//System.out.println("INTERMEDIARIA:");
+		for(Neuronio n : intermediaria.getNeuronios()){
+			for(int i = 0; i < tamanhoEntrada; i++){
+				for(int j = 0; j < tamanhoIntermediaria; j++){
+					double aj = n.getValor();
+					double ai = e.dadosEntradaIntermediariaBP[i];
+					double somaOutputs = 0;
+					
+					int l = 0;
+					for(Neuronio n2 : saida.getNeuronios()){
+						double wjk = e.pesosIntermediariaSaida[j][l];
+						double ak = n2.getValor();
+						
+						somaOutputs += (-(e.saidaTreino[entrada][l] - ak) * ak * (1 - ak) * wjk);
+						//System.out.println("SOMA OUTPUTS: " + somaOutputs);
+						l++;
+					}
+					//System.out.println(String.format("aj[%d][%d]: %f\nai[%d][%d]: %f", i, j, aj, i, j, ai));
+					
+					double derivadaParcial = aj * (1 - aj) * ai * somaOutputs;
+					double deltaPeso = - learningRate * derivadaParcial;
+					e.pesosEntradaIntermediariaDeltaAntigo[i][j] = e.pesosEntradaIntermediariaDelta[i][j];
+					e.pesosEntradaIntermediariaDelta[i][j] = deltaPeso;
+					
+					double antigoPeso = e.pesosEntradaIntermediaria[i][j];
+					double novoPeso = e.pesosEntradaIntermediaria[i][j] + deltaPeso;
+					double antigoDelta = e.pesosEntradaIntermediariaDeltaAntigo[i][j];
+					
+					e.pesosEntradaIntermediaria[i][j] = (novoPeso + momento * antigoDelta);
+					
+					
+					// L2
+					
+					//e.pesosEntradaIntermediaria[i][j] *= 1 - (learningRate * lambda);
+					//e.pesosEntradaIntermediaria[i][j] -= learningRate * derivadaParcial;
+					
+					/*
+					if(i == 0 && j == 0){
+						System.out.println(String.format("ak[%d][%d]: %f\nai[%d][%d]: %f"
+							, i, j, aj, i, j, ai));
+						System.out.println(String.format("Derivada Parcial[%d][%d]: %f", i, j, derivadaParcial));
+						System.out.println(String.format("deltaPeso[%d][%d]: %f", i, j, deltaPeso));
+						System.out.println(String.format("antigoDelta[%d][%d]: %f", i, j, antigoDelta));
+						System.out.println(String.format("antigoPeso[%d][%d]: %f", i, j, antigoPeso));
+						System.out.println(String.format("novoPeso[%d][%d]: %f", i, j, novoPeso));
+						System.out.println();
+					}*/
+				}
+			}
+		}
+			
+		/*
+		try{
+			TimeUnit.SECONDS.sleep(2);
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+		*/
+		
+		
+		/*
+		// PARTE 1
+		// Itera sobre camada de saida, calcula matriz de erro das saidas, uma para cada entrada
+		// Calcula -(y - yHat)
+		for(int i = 0; i < numeroEntradas; i++){
+			for(int j = 0; j < tamanhoSaida; j++){
+				// Calcula erro especifico de cada neuronio
+				erroSaida[i][j] = -(e.saidaTreino[i][j] - e.dadosSaida[i][j]); // -y - yHat
+				
+				//erroSaida[i][j] *= derivadaSigmoide(e.dadosIntermediariaSaidaBPTransformada[i][j][0]); //sigmoidPrime z3
+				System.out.println(String.format("erroSaida[%d][%d]: %f", i, j, erroSaida[i][j]));
+			}
+		}
+		*/
+		
+	}
+	
+	// Executa a rede neural - feedforward
+	public void executar(Elemento e){
+		int i = 0;
+		int j = 0;
+		
+		long it = 0;
+		// CALCULAR UMA LINHA DE ENTRADA DE CADA VEZ
+		
+		if(treino){
+			
+			do{
+			//for(int t = 0; t < maxIteracoes; t++){
+				for(i = 0; i < numeroEntradas; i++){
+					//System.out.println("INICIO DA ENTRADA " + (i+1));
+					// Calcular sinapses Entrada -> Intermediaria
+					// Colocar o valor de entrada nos neuronios de entrada
+					// Calcular a saida usando a funcao de ativacao + pesos
+					
+					// Iterar por cada neuronio da camada de Entrada, setando seu vetor de entrada e calculando sua saida			
+					for (Neuronio n : entrada.getNeuronios()){
+						n.setEntrada(e.dadosEntrada[i][j], i);
+						n.calcularValor(e.dadosEntrada[i].length, true, 0);
+						
+						e.dadosEntradaIntermediariaBP[j] = n.getValor(); // BP!!
+						
+						e.dadosEntradaIntermediaria[j] = n.calcularSaida(e.pesosEntradaIntermediaria[j]);
+						j++;
+					}
+						
+					j = 0;
+					
+					//e.dadosEntradaIntermediariaBPTransformada = transformaMatriz(e.dadosEntradaIntermediariaBP);
+					e.dadosEntradaIntermediariaTransformada = transformaMatriz(e.dadosEntradaIntermediaria);
+					// Calcular sinapses Intermediaria -> Saida
+					// O valor de entrada da camada Intermediaria eh composto pelas saidas da camada de Entrada
+					// Calcular a saida usando a funcao de ativacao + pesos
+					
+					// Iterar por cada neuronio da camada Intermediaria, setando seu vetor de entrada e calculando suas saidas
+					for(Neuronio n : intermediaria.getNeuronios()){
+						n.setEntrada(e.dadosEntradaIntermediariaTransformada[j]);
+						n.calcularValor(e.dadosEntradaIntermediariaTransformada[j].length, false, e.biasIntermediaria);
+						
+						e.dadosIntermediariaSaidaBP[j] = n.getValor(); // BP!!
+						
+						e.dadosIntermediariaSaida[j] = n.calcularSaida(e.pesosIntermediariaSaida[j]);
+						/*
+						System.out.println("\nSaidas N" + (j+3));
+						for(int k = 0; k < tamanhoSaida; k++){
+							System.out.print(e.dadosIntermediariaSaida[j][k] + " ");
+						}
+						System.out.println();*/
+						j++;
+					}
+					j = 0;
+					
+					
+					//e.dadosIntermediariaSaidaBPTransformada = transformaMatriz(e.dadosIntermediariaSaidaBP);
+					e.dadosIntermediariaSaidaTransformada = transformaMatriz(e.dadosIntermediariaSaida);
+					// Calcular a Saida final
+					// Colocar o valor de entrada nos neuronios de entrada
+					// Calcular a saida usando a funcao de ativacao + pesos
+							
+					// Iterar por cada neuronio da camada Saida, setando seu vetor de entrada e calculando suas saidas
+					for(Neuronio n : saida.getNeuronios()){
+						n.setEntrada(e.dadosIntermediariaSaidaTransformada[j]);
+						n.calcularValor(e.dadosIntermediariaSaidaTransformada[j].length, false, e.biasSaida);
+						e.dadosSaida[i][j] = n.getValor();
+						/*
+						System.out.println("\nSaidas N" + (j+6));
+						for(int k = 0; k < tamanhoSaida; k++){
+							System.out.print(e.dadosSaida[i][j] + " ");
+						}
+						System.out.println();*/
+						j++;
+					}
+					j = 0;
+					
+					if(!genetico){ // Roda backpropagation uma vez pra cada input
+						this.backpropagation(e, i);
+						e.calcularFitness();
+						
+						/*
+						if(it%200000 == 0){
+							System.out.println("Iteracao: " + it);
+							System.out.println("Erro: " + e.getFitness());
+						}*/
+						//System.out.println("Erro: " + e.getFitness());
+					}
+				}
+				it++;
+				//System.out.println(e.getFitness());
+			//}
+			}while(e.getFitness() > erroMinimo);
+			System.out.println("ITERACOES: " + it);
+		}else{
+			for(i = 0; i < numeroEntradasExecucao; i++){
+				//System.out.println("INICIO DA ENTRADA " + (i+1));
+				// Calcular sinapses Entrada -> Intermediaria
+				// Colocar o valor de entrada nos neuronios de entrada
+				// Calcular a saida usando a funcao de ativacao + pesos
+				
+				// Iterar por cada neuronio da camada de Entrada, setando seu vetor de entrada e calculando sua saida			
+				for (Neuronio n : entrada.getNeuronios()){
+					n.setEntrada(e.dadosEntrada[i][j], i);
+					n.calcularValor(e.dadosEntrada[i].length, true, 0);
+					e.dadosEntradaIntermediaria[j] = n.calcularSaida(e.pesosEntradaIntermediaria[j]);
+					/*
+					System.out.println("\nSaidas N" + (j+1));
+					for(int k = 0; k < tamanhoIntermediaria; k++){
+						System.out.print(e.dadosEntradaIntermediaria[j][k] + " ");
+					}
+					System.out.println();
+					*/
+					j++;
+				}
+			
+			
+				j = 0;
+				
+				e.dadosEntradaIntermediariaTransformada = transformaMatriz(e.dadosEntradaIntermediaria);
+				// Calcular sinapses Intermediaria -> Saida
+				// O valor de entrada da camada Intermediaria eh composto pelas saidas da camada de Entrada
+				// Calcular a saida usando a funcao de ativacao + pesos
+				
+				// Iterar por cada neuronio da camada Intermediaria, setando seu vetor de entrada e calculando suas saidas
+				for(Neuronio n : intermediaria.getNeuronios()){
+					n.setEntrada(e.dadosEntradaIntermediariaTransformada[j]);
+					n.calcularValor(e.dadosEntradaIntermediariaTransformada[j].length, false, e.biasIntermediaria);
+					//System.out.print("\nValor N" + (j+3) + "\n" + n.getValor());
+					e.dadosIntermediariaSaida[j] = n.calcularSaida(e.pesosIntermediariaSaida[j]);
+					/*
+					System.out.println("\nSaidas N" + (j+3));
+					for(int k = 0; k < tamanhoSaida; k++){
+						System.out.print(e.dadosIntermediariaSaida[j][k] + " ");
+					}
+					System.out.println();*/
+					j++;
+				}
+				j = 0;
+				
+				
+				e.dadosIntermediariaSaidaTransformada = transformaMatriz(e.dadosIntermediariaSaida);
+				// Calcular a Saida final
+				// Colocar o valor de entrada nos neuronios de entrada
+				// Calcular a saida usando a funcao de ativacao + pesos
+						
+				// Iterar por cada neuronio da camada Saida, setando seu vetor de entrada e calculando suas saidas
+				for(Neuronio n : saida.getNeuronios()){
+					n.setEntrada(e.dadosIntermediariaSaidaTransformada[j]);
+					n.calcularValor(e.dadosIntermediariaSaidaTransformada[j].length, false, e.biasSaida);
+					e.dadosSaida[i][j] = n.getValor();
+					/*
+					System.out.println("\nSaidas N" + (j+6));
+					for(int k = 0; k < tamanhoSaida; k++){
+						System.out.print(e.dadosSaida[i][j] + " ");
+					}
+					System.out.println();*/
+					j++;
+				}
+				j = 0;
+			}
+		}
+	}
+
+
 	public void crossover(){
 		Random r = new Random();
 		
@@ -319,7 +659,7 @@ public class RedeNeural {
 				e3.pesosEntradaIntermediaria[i][j] = e1.pesosEntradaIntermediaria[i][j];
 				e4.pesosEntradaIntermediaria[i][j] = e2.pesosEntradaIntermediaria[i][j];
 				auxiliar1[i][j] = e1.pesosEntradaIntermediaria[i][j];
-				auxiliar3[i][j] = e2.pesosEntradaIntermediaria[i][j];
+				auxiliar3[i][j] = e2.pesosEntradaIntermediaria[i][j];				
 			}
 		}
 		
@@ -356,6 +696,15 @@ public class RedeNeural {
 			}
 		}
 		
+		// Crossover bias
+		if(r.nextDouble() < chanceCross){
+			e3.biasIntermediaria = e1.biasIntermediaria;
+		}
+		
+		if(r.nextDouble() < chanceCross){
+			e3.biasSaida = e1.biasSaida;
+		}
+		
 		// Crossover matriz de peso 1 (Entrada -> Intermediaria)
 		for(int i = 0; i < tamanhoEntrada; i++){
 			for(int j = 0; j < tamanhoIntermediaria; j++){
@@ -377,14 +726,18 @@ public class RedeNeural {
 			}
 		}
 		
+		
+		// Crossover bias
+		if(r.nextDouble() < chanceCross){
+			e4.biasIntermediaria = e2.biasIntermediaria;
+		}
+		
+		if(r.nextDouble() < chanceCross){
+			e4.biasSaida = e2.biasSaida;
+		}
+		
 		Collections.sort(this.populacao);
 	}
-	
-	
-	public void backpropagation(){
-		
-	}
-	
 	// Gera populacao inicial - valores aleatorios para os pesos
 	// A populacao eh formada por um conjunto de matrizes de peso
 	// Cada "membro" da populacao eh um conjunto de matrizes de peso
@@ -949,6 +1302,8 @@ public class RedeNeural {
 			String path = "/home/guilherme/Desktop/TCC Real/Semestre 2/ArquivosNN/Executar/";
 			PrintWriter writerEntradaIntermediaria = new PrintWriter(path + "pesosEntradaIntermediaria" + rede + ".txt", "UTF-8");
 			PrintWriter writerIntermediariaSaida = new PrintWriter(path + "pesosIntermediariaSaida" + rede + ".txt", "UTF-8");
+			PrintWriter writerBiasIntermediaria = new PrintWriter(path + "biasIntermediaria" + rede + ".txt", "UTF-8");
+			PrintWriter writerBiasSaida = new PrintWriter(path + "biasSaida" + rede + ".txt", "UTF-8");
 			
 			for(int i = 0; i < tamanhoEntrada; i++){
 				for(int j = 0; j < tamanhoIntermediaria; j++){
@@ -965,6 +1320,12 @@ public class RedeNeural {
 				writerIntermediariaSaida.println();
 			}
 			writerIntermediariaSaida.close();
+			
+			writerBiasIntermediaria.print(e.biasIntermediaria);
+			writerBiasIntermediaria.close();
+			
+			writerBiasSaida.print(e.biasSaida);
+			writerBiasSaida.close();
 			
 		}catch(Exception ex){
 			ex.printStackTrace();
@@ -1074,142 +1435,7 @@ public class RedeNeural {
 		//return null;
 	}
 	
-	// Executa a rede neural - feedforward
-	public void executar(Elemento e){
-		
-		int i = 0;
-		int j = 0;
-		
-		// CALCULAR UMA LINHA DE ENTRADA DE CADA VEZ
-		
-		if(treino){
-			for(i = 0; i < numeroEntradas; i++){
-				//System.out.println("INICIO DA ENTRADA " + (i+1));
-				// Calcular sinapses Entrada -> Intermediaria
-				// Colocar o valor de entrada nos neuronios de entrada
-				// Calcular a saida usando a funcao de ativacao + pesos
-				
-				// Iterar por cada neuronio da camada de Entrada, setando seu vetor de entrada e calculando sua saida			
-				for (Neuronio n : entrada.getNeuronios()){
-					n.setEntrada(e.dadosEntrada[i][j], i);
-					n.calcularValor(e.dadosEntrada[i].length, false);
-					e.dadosEntradaIntermediaria[j] = n.calcularSaida(e.pesosEntradaIntermediaria[j]);
-					j++;
-				}
-					
-				j = 0;
-				
-				e.dadosEntradaIntermediariaTransformada = transformaMatriz(e.dadosEntradaIntermediaria);
-				// Calcular sinapses Intermediaria -> Saida
-				// O valor de entrada da camada Intermediaria eh composto pelas saidas da camada de Entrada
-				// Calcular a saida usando a funcao de ativacao + pesos
-				
-				// Iterar por cada neuronio da camada Intermediaria, setando seu vetor de entrada e calculando suas saidas
-				for(Neuronio n : intermediaria.getNeuronios()){
-					n.setEntrada(e.dadosEntradaIntermediariaTransformada[j]);
-					n.calcularValor(e.dadosEntradaIntermediariaTransformada[j].length, false);
-					//System.out.print("\nValor N" + (j+3) + "\n" + n.getValor());
-					e.dadosIntermediariaSaida[j] = n.calcularSaida(e.pesosIntermediariaSaida[j]);
-					/*
-					System.out.println("\nSaidas N" + (j+3));
-					for(int k = 0; k < tamanhoSaida; k++){
-						System.out.print(e.dadosIntermediariaSaida[j][k] + " ");
-					}
-					System.out.println();*/
-					j++;
-				}
-				j = 0;
-				
-				
-				e.dadosIntermediariaSaidaTransformada = transformaMatriz(e.dadosIntermediariaSaida);
-				// Calcular a Saida final
-				// Colocar o valor de entrada nos neuronios de entrada
-				// Calcular a saida usando a funcao de ativacao + pesos
-						
-				// Iterar por cada neuronio da camada Saida, setando seu vetor de entrada e calculando suas saidas
-				for(Neuronio n : saida.getNeuronios()){
-					n.setEntrada(e.dadosIntermediariaSaidaTransformada[j]);
-					n.calcularValor(e.dadosIntermediariaSaidaTransformada[j].length, true);
-					e.dadosSaida[i][j] = n.getValor();
-					/*
-					System.out.println("\nSaidas N" + (j+6));
-					for(int k = 0; k < tamanhoSaida; k++){
-						System.out.print(e.dadosSaida[i][j] + " ");
-					}
-					System.out.println();*/
-					j++;
-				}
-				j = 0;
-			}
-		}else{
-			for(i = 0; i < numeroEntradasExecucao; i++){
-				//System.out.println("INICIO DA ENTRADA " + (i+1));
-				// Calcular sinapses Entrada -> Intermediaria
-				// Colocar o valor de entrada nos neuronios de entrada
-				// Calcular a saida usando a funcao de ativacao + pesos
-				
-				// Iterar por cada neuronio da camada de Entrada, setando seu vetor de entrada e calculando sua saida			
-				for (Neuronio n : entrada.getNeuronios()){
-					n.setEntrada(e.dadosEntrada[i][j], i);
-					n.calcularValor(e.dadosEntrada[i].length, false);
-					e.dadosEntradaIntermediaria[j] = n.calcularSaida(e.pesosEntradaIntermediaria[j]);
-					/*
-					System.out.println("\nSaidas N" + (j+1));
-					for(int k = 0; k < tamanhoIntermediaria; k++){
-						System.out.print(e.dadosEntradaIntermediaria[j][k] + " ");
-					}
-					System.out.println();
-					*/
-					j++;
-				}
-			
-			
-				j = 0;
-				
-				e.dadosEntradaIntermediariaTransformada = transformaMatriz(e.dadosEntradaIntermediaria);
-				// Calcular sinapses Intermediaria -> Saida
-				// O valor de entrada da camada Intermediaria eh composto pelas saidas da camada de Entrada
-				// Calcular a saida usando a funcao de ativacao + pesos
-				
-				// Iterar por cada neuronio da camada Intermediaria, setando seu vetor de entrada e calculando suas saidas
-				for(Neuronio n : intermediaria.getNeuronios()){
-					n.setEntrada(e.dadosEntradaIntermediariaTransformada[j]);
-					n.calcularValor(e.dadosEntradaIntermediariaTransformada[j].length, false);
-					//System.out.print("\nValor N" + (j+3) + "\n" + n.getValor());
-					e.dadosIntermediariaSaida[j] = n.calcularSaida(e.pesosIntermediariaSaida[j]);
-					/*
-					System.out.println("\nSaidas N" + (j+3));
-					for(int k = 0; k < tamanhoSaida; k++){
-						System.out.print(e.dadosIntermediariaSaida[j][k] + " ");
-					}
-					System.out.println();*/
-					j++;
-				}
-				j = 0;
-				
-				
-				e.dadosIntermediariaSaidaTransformada = transformaMatriz(e.dadosIntermediariaSaida);
-				// Calcular a Saida final
-				// Colocar o valor de entrada nos neuronios de entrada
-				// Calcular a saida usando a funcao de ativacao + pesos
-						
-				// Iterar por cada neuronio da camada Saida, setando seu vetor de entrada e calculando suas saidas
-				for(Neuronio n : saida.getNeuronios()){
-					n.setEntrada(e.dadosIntermediariaSaidaTransformada[j]);
-					n.calcularValor(e.dadosIntermediariaSaidaTransformada[j].length, true);
-					e.dadosSaida[i][j] = n.getValor();
-					/*
-					System.out.println("\nSaidas N" + (j+6));
-					for(int k = 0; k < tamanhoSaida; k++){
-						System.out.print(e.dadosSaida[i][j] + " ");
-					}
-					System.out.println();*/
-					j++;
-				}
-				j = 0;
-			}
-		}
-	}
+	
 	
 	// Transforma colunas em linhas
 	public double[][] transformaMatriz(double[][] m1){
@@ -1228,6 +1454,27 @@ public class RedeNeural {
 		return m2;
 	}
 	
+	// Multiplicar matrizes
+	public double[][] multiplicarMatrizes(double[][] a, double[][] b){
+		double c[][] = new double[a.length][b[0].length];
+		/*
+		if(a[0].length != b.length){
+			try {
+				throw new Exception("Impossivel Multiplicar");
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}*/
+		
+		for(int i = 0; i < a.length; i++){
+			for(int j = 0; j < b[0].length; j++){
+				for(int k = 0; k < a[0].length; k++){
+					c[i][j] += a[j][k] * b[k][j];
+				}
+			}
+		}		
+		return c;
+	}
 	
 	public void printarMatrizes(Elemento e){
 		System.out.println("ELEMENTO " + e.getElementoID());
@@ -1279,6 +1526,8 @@ public class RedeNeural {
 			System.out.println();
 		}
 		
+		// Printa Biass
+		System.out.println(String.format("\nBias Intermediaria: %f\nBias Saida: %f", e.biasIntermediaria, e.biasSaida));
 		
 		if(treino){
 			// Printa Matriz da Saida
