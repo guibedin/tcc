@@ -37,8 +37,8 @@ public class Previsao {
 	}
 	
 	public String previsaoToJSONString(){
-		return String.format("{data:%s,  precipitacao:%s, temperatura_maxima:%s, temperatura_minima:%s, temperatura_media:%s}",
-				this.getData(), this.getPrecipitacao(), this.getTemperatura_maxima(), this.getTemperatura_minima(), this.getTemperatura_media());
+		return String.format("{data:%s, temperatura_maxima:%s, temperatura_minima:%s, temperatura_media:%s}",
+				this.getData(), this.getTemperatura_maxima(), this.getTemperatura_minima(), this.getTemperatura_media());
 	}
 	
 	public int getId() {

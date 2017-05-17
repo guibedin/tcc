@@ -13,14 +13,17 @@ import static util.Constantes.*;
 public class Elemento implements Comparable<Elemento> {
 
 	 // Matriz de sinapses (pesos)
-	public double[][] pesosEntradaIntermediaria;
-	public double[][] pesosIntermediariaSaida; 
+	public double[][] pesosEntradaIntermediaria1;
+	public double[][] pesosIntermediaria1Intermediaria2; 
+	public double[][] pesosIntermediaria2Saida; 
 	
-	public double[][] pesosEntradaIntermediariaDelta;
-	public double[][] pesosIntermediariaSaidaDelta;
+	public double[][] pesosEntradaIntermediaria1Delta;
+	public double[][] pesosIntermediaria1Intermediaria2Delta;
+	public double[][] pesosIntermediaria2SaidaDelta;
 	
-	public double[][] pesosEntradaIntermediariaDeltaAntigo;
-	public double[][] pesosIntermediariaSaidaDeltaAntigo;
+	public double[][] pesosEntradaIntermediaria1DeltaAntigo;
+	public double[][] pesosIntermediaria1Intermediaria2DeltaAntigo;
+	public double[][] pesosIntermediaria2SaidaDeltaAntigo;
 	
 	// Bias da rede
 	public double biasIntermediaria; 
@@ -31,19 +34,25 @@ public class Elemento implements Comparable<Elemento> {
 	
 	public double[][] saidaTreino; // Dados usados para treinar rede (Comparar dadosSaida com essa matriz)
 	
-	public double[][] dadosEntradaIntermediaria;
-	public double[][] dadosEntradaIntermediariaTransformada;
+	public double[][] dadosEntradaIntermediaria1;
+	public double[][] dadosEntradaIntermediaria1Transformada;
 	
 	//public double[][] dadosEntradaIntermediariaBP;
-	public double[] dadosEntradaIntermediariaBP;
-	public double[][] dadosEntradaIntermediariaBPTransformada;
+	public double[] dadosEntradaIntermediaria1BP;
+	public double[][] dadosEntradaIntermediaria1BPTransformada;
 	
-	public double[][] dadosIntermediariaSaida;
-	public double[][] dadosIntermediariaSaidaTransformada;
+	public double[] dadosIntermediaria1Intermediaria2BP;
+	public double[][] dadosIntermediaria1Intermediaria2BPTransformada;	
+	
+	public double[][] dadosIntermediaria1Intermediaria2;
+	public double[][] dadosIntermediaria1Intermediaria2Transformada;	
+	
+	public double[][] dadosIntermediaria2Saida;
+	public double[][] dadosIntermediaria2SaidaTransformada;
 	
 	//public double[][] dadosIntermediariaSaidaBP;
-	public double[] dadosIntermediariaSaidaBP;
-	public double[][] dadosIntermediariaSaidaBPTransformada;
+	public double[] dadosIntermediaria2SaidaBP;
+	public double[][] dadosIntermediaria2SaidaBPTransformada;
 	
 	private double fitness;
 	private int elementoID;
@@ -60,26 +69,34 @@ public class Elemento implements Comparable<Elemento> {
 		this.saidaTreino = new double[numeroEntradas][tamanhoSaida];
 		
 		// Matrizes de saida de uma camada -> entrada da proxima
-		this.dadosEntradaIntermediaria = new double[tamanhoEntrada][tamanhoIntermediaria];
-		this.dadosIntermediariaSaida = new double[tamanhoIntermediaria][tamanhoSaida];
+		this.dadosEntradaIntermediaria1 = new double[tamanhoEntrada][tamanhoIntermediaria1];
+		this.dadosIntermediaria1Intermediaria2 = new double[tamanhoIntermediaria1][tamanhoIntermediaria2];
+		this.dadosIntermediaria2Saida = new double[tamanhoIntermediaria2][tamanhoSaida];
 		
 		// Matrizes Backpropagation
 		//this.dadosEntradaIntermediariaBP = new double[tamanhoEntrada][tamanhoIntermediaria];
-		this.dadosEntradaIntermediariaBP = new double[tamanhoEntrada];
-		this.dadosEntradaIntermediariaBPTransformada = new double[tamanhoIntermediaria][tamanhoEntrada];
+		this.dadosEntradaIntermediaria1BP = new double[tamanhoEntrada];
+		this.dadosEntradaIntermediaria1BPTransformada = new double[tamanhoIntermediaria1][tamanhoEntrada];
+		
+		this.dadosIntermediaria1Intermediaria2BP = new double[tamanhoIntermediaria1];
+		this.dadosIntermediaria1Intermediaria2BPTransformada = new double[tamanhoIntermediaria2][tamanhoIntermediaria1];
 		
 		//this.dadosIntermediariaSaidaBP = new double[tamanhoIntermediaria][tamanhoSaida];
-		this.dadosIntermediariaSaidaBP = new double[tamanhoIntermediaria];
-		this.dadosIntermediariaSaidaBPTransformada = new double[tamanhoSaida][tamanhoIntermediaria];
+		this.dadosIntermediaria2SaidaBP = new double[tamanhoIntermediaria2];
+		this.dadosIntermediaria2SaidaBPTransformada = new double[tamanhoSaida][tamanhoIntermediaria2];
 		
 		// Matrizes de peso das sinapses (entrada -> intermediaria / intermediaria -> saida)
-		this.pesosEntradaIntermediaria = new double[tamanhoEntrada][tamanhoIntermediaria];
-		this.pesosIntermediariaSaida = new double[tamanhoIntermediaria][tamanhoSaida];
+		this.pesosEntradaIntermediaria1 = new double[tamanhoEntrada][tamanhoIntermediaria1];
+		this.pesosIntermediaria1Intermediaria2 = new double[tamanhoIntermediaria1][tamanhoIntermediaria2];
+		this.pesosIntermediaria2Saida = new double[tamanhoIntermediaria2][tamanhoSaida];
 
-		this.pesosEntradaIntermediariaDelta = new double[tamanhoEntrada][tamanhoIntermediaria];
-		this.pesosIntermediariaSaidaDelta = new double[tamanhoIntermediaria][tamanhoSaida];
-		this.pesosEntradaIntermediariaDeltaAntigo = new double[tamanhoEntrada][tamanhoIntermediaria];
-		this.pesosIntermediariaSaidaDeltaAntigo = new double[tamanhoIntermediaria][tamanhoSaida];
+		this.pesosEntradaIntermediaria1Delta = new double[tamanhoEntrada][tamanhoIntermediaria1];
+		this.pesosIntermediaria1Intermediaria2Delta = new double[tamanhoIntermediaria1][tamanhoIntermediaria2];
+		this.pesosIntermediaria2SaidaDelta = new double[tamanhoIntermediaria2][tamanhoSaida];
+		
+		this.pesosEntradaIntermediaria1DeltaAntigo = new double[tamanhoEntrada][tamanhoIntermediaria1];
+		this.pesosIntermediaria1Intermediaria2DeltaAntigo = new double[tamanhoIntermediaria1][tamanhoIntermediaria2];
+		this.pesosIntermediaria2SaidaDeltaAntigo = new double[tamanhoIntermediaria2][tamanhoSaida];
 		
 		this.elementoID = elementoID;
 		
@@ -88,6 +105,7 @@ public class Elemento implements Comparable<Elemento> {
 		this.lerArquivos(entrada);
 		this.lerArquivos("pesos1" + elementoID + ".txt");
 		this.lerArquivos("pesos2" + elementoID + ".txt");
+		this.lerArquivos("pesos3" + elementoID + ".txt");
 		//this.lerArquivos("biasIntermediaria" + elementoID + ".txt");
 		//this.lerArquivos("biasSaida" + elementoID + ".txt");
 		this.lerArquivos(saida);
@@ -103,13 +121,15 @@ public class Elemento implements Comparable<Elemento> {
 		this.dadosSaida = new double[numeroEntradasExecucao][tamanhoSaida];
 		
 		// Matrizes de saida de uma camada -> entrada da proxima
-		this.dadosEntradaIntermediaria = new double[tamanhoEntrada][tamanhoIntermediaria];
-		this.dadosIntermediariaSaida = new double[tamanhoIntermediaria][tamanhoSaida];
+		this.dadosEntradaIntermediaria1 = new double[tamanhoEntrada][tamanhoIntermediaria1];
+		this.dadosIntermediaria1Intermediaria2 = new double[tamanhoIntermediaria1][tamanhoIntermediaria2];
+		this.dadosIntermediaria2Saida = new double[tamanhoIntermediaria2][tamanhoSaida];
 		
 		
 		// Matrizes de peso das sinapses (entrada -> intermediaria / intermediaria -> saida)
-		this.pesosEntradaIntermediaria = new double[tamanhoEntrada][tamanhoIntermediaria];
-		this.pesosIntermediariaSaida = new double[tamanhoIntermediaria][tamanhoSaida];
+		this.pesosEntradaIntermediaria1 = new double[tamanhoEntrada][tamanhoIntermediaria1];
+		this.pesosIntermediaria1Intermediaria2 = new double[tamanhoIntermediaria1][tamanhoIntermediaria2];
+		this.pesosIntermediaria2Saida = new double[tamanhoIntermediaria2][tamanhoSaida];
 		
 		this.elementoID = 0;
 		String linha;
@@ -119,38 +139,58 @@ public class Elemento implements Comparable<Elemento> {
 			int contador = 0;
 			
 			InputStream entradaIntermediariaIS = new FileInputStream("/home/guilherme/Desktop/TCC Real/Semestre 2/ArquivosNN/Executar/"
-					+ "pesosEntradaIntermediaria" + rede + ".txt");
+					+ "pesosEntradaIntermediaria1" + rede + ".txt");
 			InputStreamReader entradaIntermediariaISR = new InputStreamReader(entradaIntermediariaIS);
 			BufferedReader bufferEntradaIntermediaria = new BufferedReader(entradaIntermediariaISR);
 			
+			
+			InputStream intermediaria1Intermediaria2IS = new FileInputStream("/home/guilherme/Desktop/TCC Real/Semestre 2/ArquivosNN/Executar/"
+					+ "pesosIntermediaria1Intermediaria2" + rede + ".txt");
+			InputStreamReader intermediaria1Intermediaria2ISR = new InputStreamReader(intermediaria1Intermediaria2IS);
+			BufferedReader bufferIntermediaria1Intermediaria2 = new BufferedReader(intermediaria1Intermediaria2ISR);
+			
 			// Abre arquivo passado como parametro
-			InputStream intermediariaSaidaIS = new FileInputStream("/home/guilherme/Desktop/TCC Real/Semestre 2/ArquivosNN/Executar/"
-					+ "pesosIntermediariaSaida" + rede + ".txt");
-			InputStreamReader intermediariaSaidaISR = new InputStreamReader(intermediariaSaidaIS);
-			BufferedReader bufferIntermediariaSaida = new BufferedReader(intermediariaSaidaISR);
+			InputStream intermediaria2SaidaIS = new FileInputStream("/home/guilherme/Desktop/TCC Real/Semestre 2/ArquivosNN/Executar/"
+					+ "pesosIntermediaria2Saida" + rede + ".txt");
+			InputStreamReader intermediaria2SaidaISR = new InputStreamReader(intermediaria2SaidaIS);
+			BufferedReader bufferIntermediaria2Saida = new BufferedReader(intermediaria2SaidaISR);
 			
 			// Comeca leitura do arquivo, linha por linha
 			while ((linha = bufferEntradaIntermediaria.readLine()) != null){
 				String[] numeros = linha.split("\\s+");
 				// Preenche matriz de peso 1 - Camada de entrada -> Intermediaria
-				for(int i = 0; i < tamanhoIntermediaria; i++){
-					this.pesosEntradaIntermediaria[contador][i] = Double.parseDouble(numeros[i]);
+				for(int i = 0; i < tamanhoIntermediaria1; i++){
+					this.pesosEntradaIntermediaria1[contador][i] = Double.parseDouble(numeros[i]);
 				}
 				contador++;
 			}
 			
 			bufferEntradaIntermediaria.close();
 			contador = 0;
+			
 			// Comeca leitura do arquivo, linha por linha
-			while ((linha = bufferIntermediariaSaida.readLine()) != null){
+			while ((linha = bufferIntermediaria1Intermediaria2.readLine()) != null){
 				String[] numeros = linha.split("\\s+");
-				// Preenche matriz de peso 2 - Camada Intermediaria -> Saida
-				for(int i = 0; i < tamanhoSaida; i++){
-					this.pesosIntermediariaSaida[contador][i] = Double.parseDouble(numeros[i]);
+				// Preenche matriz de peso 1 - Camada de entrada -> Intermediaria
+				for(int i = 0; i < tamanhoIntermediaria2; i++){
+					this.pesosIntermediaria1Intermediaria2[contador][i] = Double.parseDouble(numeros[i]);
 				}
 				contador++;
 			}
-			bufferIntermediariaSaida.close();
+			
+			bufferIntermediaria1Intermediaria2.close();
+			contador = 0;
+			
+			// Comeca leitura do arquivo, linha por linha
+			while ((linha = bufferIntermediaria2Saida.readLine()) != null){
+				String[] numeros = linha.split("\\s+");
+				// Preenche matriz de peso 2 - Camada Intermediaria -> Saida
+				for(int i = 0; i < tamanhoSaida; i++){
+					this.pesosIntermediaria2Saida[contador][i] = Double.parseDouble(numeros[i]);
+				}
+				contador++;
+			}
+			bufferIntermediaria2Saida.close();
 			
 			// Arquivos de BIAS
 			InputStream biasIntermediariaIS = new FileInputStream("/home/guilherme/Desktop/TCC Real/Semestre 2/ArquivosNN/Executar/"
@@ -215,9 +255,9 @@ public class Elemento implements Comparable<Elemento> {
 		
 		// Muta matriz de peso 1 (Entrada -> Intermediaria)
 		for(int i = 0; i < tamanhoEntrada; i++){
-			for(int j = 0; j < tamanhoIntermediaria; j++){
+			for(int j = 0; j < tamanhoIntermediaria1; j++){
 				if(r.nextDouble() < chanceMutacao){
-					this.pesosEntradaIntermediaria[i][j] -=  this.gerarPeso();
+					this.pesosEntradaIntermediaria1[i][j] -=  this.gerarPeso();
 					//System.out.println("mutou1");
 				}
 			}
@@ -228,12 +268,22 @@ public class Elemento implements Comparable<Elemento> {
 			this.biasIntermediaria -= this.gerarPeso();
 		}
 		
+		// Muta matriz de peso 1 (Entrada -> Intermediaria)
+		for(int i = 0; i < tamanhoIntermediaria1; i++){
+			for(int j = 0; j < tamanhoIntermediaria2; j++){
+				if(r.nextDouble() < chanceMutacao){
+					this.pesosIntermediaria1Intermediaria2[i][j] -=  this.gerarPeso();
+					//System.out.println("mutou2");
+				}
+			}
+		}
+		
 		// Muta matriz de peso 2 (Intermediaria -> Saida)
-		for(int i = 0; i < tamanhoIntermediaria; i++){
+		for(int i = 0; i < tamanhoIntermediaria2; i++){
 			for(int j = 0; j < tamanhoSaida; j++){
 				if(r.nextDouble() < chanceMutacao){
-					this.pesosIntermediariaSaida[i][j] -=  this.gerarPeso();
-					//System.out.println("mutou2");
+					this.pesosIntermediaria2Saida[i][j] -=  this.gerarPeso();
+					//System.out.println("mutou3");
 				}
 			}
 		}
@@ -252,7 +302,7 @@ public class Elemento implements Comparable<Elemento> {
 		try{
 		    PrintWriter writer = new PrintWriter(path + "pesos1" + this.elementoID + ".txt", "UTF-8");
 		    for(int i = 0; i < tamanhoEntrada; i++){
-		    	for(int j = 0; j < tamanhoIntermediaria; j++){
+		    	for(int j = 0; j < tamanhoIntermediaria1; j++){
 			    	writer.print(gerarPeso() + " ");
 			    }
 		    	writer.println();
@@ -264,8 +314,19 @@ public class Elemento implements Comparable<Elemento> {
 		    writer.print(gerarPeso());
 		    writer.close();
 		    
+		    
 		    writer = new PrintWriter(path + "pesos2" + this.elementoID + ".txt", "UTF-8");
-		    for(int i = 0; i < tamanhoIntermediaria; i++){
+		    for(int i = 0; i < tamanhoIntermediaria1; i++){
+		    	for(int j = 0; j < tamanhoIntermediaria2; j++){
+			    	writer.print(gerarPeso() + " ");
+			    }
+		    	writer.println();
+		    }
+		    writer.close();
+		    
+		    
+		    writer = new PrintWriter(path + "pesos3" + this.elementoID + ".txt", "UTF-8");
+		    for(int i = 0; i < tamanhoIntermediaria2; i++){
 		    	for(int j = 0; j < tamanhoSaida; j++){
 			    	writer.print(gerarPeso() + " ");
 			    }
@@ -323,16 +384,24 @@ public class Elemento implements Comparable<Elemento> {
 				
 				if(arquivo.equals("pesos1" + this.elementoID + ".txt")){
 					// Preenche matriz de peso 1 - Camada de entrada -> Intermediaria
-					for(int i = 0; i < tamanhoIntermediaria; i++){
-						this.pesosEntradaIntermediaria[contador][i] = Double.parseDouble(numeros[i]);
+					for(int i = 0; i < tamanhoIntermediaria1; i++){
+						this.pesosEntradaIntermediaria1[contador][i] = Double.parseDouble(numeros[i]);
 					}
 					contador++;
 				}
 				
 				if(arquivo.equals("pesos2" + this.elementoID + ".txt")){
+					// Preenche matriz de peso 1 - Camada de entrada -> Intermediaria
+					for(int i = 0; i < tamanhoIntermediaria2; i++){
+						this.pesosIntermediaria1Intermediaria2[contador][i] = Double.parseDouble(numeros[i]);
+					}
+					contador++;
+				}
+				
+				if(arquivo.equals("pesos3" + this.elementoID + ".txt")){
 					// Preenche matriz de peso 2 - Camada Intermediaria -> Saida
 					for(int i = 0; i < tamanhoSaida; i++){
-						this.pesosIntermediariaSaida[contador][i] = Double.parseDouble(numeros[i]);
+						this.pesosIntermediaria2Saida[contador][i] = Double.parseDouble(numeros[i]);
 					}
 					contador++;
 				}

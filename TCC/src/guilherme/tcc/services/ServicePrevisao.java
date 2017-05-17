@@ -78,18 +78,19 @@ public class ServicePrevisao {
 			redeMedia.desnormalizarDados(eMedia, 2);
 			redeMedia.printarMatrizes(eMedia);
 			
+			/*
 			ePrecipitacao = redePrecipitacao.prepararExecucao(sqlDate, "Precipitacao");
 			redePrecipitacao.normalizarDadosExecucao(ePrecipitacao, "Precipitacao");
 			redePrecipitacao.executar(ePrecipitacao);
 			redePrecipitacao.desnormalizarDados(ePrecipitacao, 3);
 			redePrecipitacao.printarMatrizes(ePrecipitacao);
-			
+			*/
 			
 			p.setData(sqlDate);
 			p.setTemperatura_maxima(eMaxima.dadosSaida[0][0]);
 			p.setTemperatura_minima(eMinima.dadosSaida[0][0]);
 			p.setTemperatura_media(eMedia.dadosSaida[0][0]);
-			p.setPrecipitacao(ePrecipitacao.dadosSaida[0][0]);
+			//p.setPrecipitacao(ePrecipitacao.dadosSaida[0][0]);
 			
 			resultado = p.previsaoToJSONString();
 			
