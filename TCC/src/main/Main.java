@@ -13,13 +13,12 @@ import static util.Constantes.tamanhoPopulacao;
 import static util.Constantes.tamanhoSaida;
 import static util.Constantes.treino;
 
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.sql.Date;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,6 +27,7 @@ import guilherme.tcc.DAO.MedicaoDAOImpl;
 import guilherme.tcc.classes.Elemento;
 import guilherme.tcc.classes.Medicao;
 import guilherme.tcc.classes.RedeNeural;
+import util.Constantes;
 
 public class Main {
 	
@@ -62,7 +62,7 @@ public class Main {
 		redeMaxima = new RedeNeural();
 		redeMinima = new RedeNeural();
 		redeMedia = new RedeNeural();
-		redePrecipitacao = new RedeNeural();
+		//redePrecipitacao = new RedeNeural();
 		
 		Elemento eMaxima;
 		Elemento eMinima;
@@ -74,7 +74,7 @@ public class Main {
 			redeMaxima.gerarArquivosDeTreino();
 			redeMinima.gerarArquivosDeTreino();
 			redeMedia.gerarArquivosDeTreino();
-			redePrecipitacao.gerarArquivosDeTreino();
+			//redePrecipitacao.gerarArquivosDeTreino();
 			
 			if(!genetico){
 				Elemento e;
@@ -128,6 +128,7 @@ public class Main {
 				*/
 			}
 			else{
+				/*
 				System.out.println("Trienando rede: Temperatura Maxima");
 				inicioTreino = System.currentTimeMillis(); // Tempo inicial de execucao
 				redeMaxima.treinar(entradaMaxima, saidaMaxima); // Treina rede neural Temp Maxima
@@ -135,7 +136,7 @@ public class Main {
 				eMaxima = redeMaxima.getMaiorFitness();
 				printarTreino(redeMaxima, "Temp Maxima", 0, eMaxima);
 				redeMaxima.salvarArquivosDePesos("Maxima", eMaxima);
-				
+				*/
 				
 				System.out.println("Trienando rede: Temperatura Minima");
 				inicioTreino = System.currentTimeMillis(); // Tempo inicial de execucao
@@ -170,17 +171,26 @@ public class Main {
 			
 			ArrayList<List<Medicao>> medicoes = new ArrayList<List<Medicao>>();
 			
+			// Gerar CSV dos valores utilizados para executar 
 			
-			medicoes.add(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2015-04-01"), Date.valueOf("2015-04-30")));
-			medicoes.add(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2015-05-01"), Date.valueOf("2015-05-31")));
+			// Valores que foram utilizados no treino (gerar csv)
+			medicoes.add(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2014-01-01"), Date.valueOf("2014-12-31")));
+			
+			
+			// Valores de teste
+			medicoes.add(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2015-01-01"), Date.valueOf("2015-12-31")));
+			
+			/*medicoes.add(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2015-05-01"), Date.valueOf("2015-05-31")));
 			medicoes.add(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2015-10-01"), Date.valueOf("2015-10-31")));
 			medicoes.add(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2015-11-01"), Date.valueOf("2015-11-30")));
+			*/
+			medicoes.add(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2016-01-01"), Date.valueOf("2016-12-31")));
 			
-			medicoes.add(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2016-06-01"), Date.valueOf("2016-06-30")));
-			medicoes.add(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2016-07-01"), Date.valueOf("2016-07-31")));
+			/*medicoes.add(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2016-07-01"), Date.valueOf("2016-07-31")));
 			medicoes.add(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2016-08-01"), Date.valueOf("2016-08-31")));
 			medicoes.add(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2016-09-01"), Date.valueOf("2016-09-30")));
-
+*/
+			
 			String path = "/home/guilherme/Desktop/TCC Real/Semestre 2/ArquivosNN/ExecutarTestes/";
 			DecimalFormatSymbols ponto = new DecimalFormatSymbols(Locale.US);
 			ponto.setDecimalSeparator('.');
@@ -191,30 +201,41 @@ public class Main {
 				
 				for(List<Medicao> l : medicoes){
 					for(Medicao m : l){
-						eMaxima = redeMaxima.prepararExecucao(m.getData(), "Maxima");
-						redeMaxima.normalizarDadosExecucao(eMaxima, "Maxima");
-						redeMaxima.executar(eMaxima);
-						redeMaxima.desnormalizarDados(eMaxima, 0);
+						Calendar cal = Calendar.getInstance();
+						cal.setTime(m.getData());
+						List<String> datasExcluidas = new ArrayList<String>();
+						datasExcluidas.add(cal.get(Calendar.YEAR)+"-02-29");
+						datasExcluidas.add(cal.get(Calendar.YEAR)+"-11-16");
+						datasExcluidas.add(cal.get(Calendar.YEAR)+"-07-29");
+						datasExcluidas.add(cal.get(Calendar.YEAR)+"-07-18");
+						datasExcluidas.add(cal.get(Calendar.YEAR)+"-12-24");
+						datasExcluidas.add(cal.get(Calendar.YEAR)+"-12-25");
 						
-						eMinima = redeMinima.prepararExecucao(m.getData(), "Minima");
-						redeMinima.normalizarDadosExecucao(eMinima, "Minima");
-						redeMinima.executar(eMinima);
-						redeMinima.desnormalizarDados(eMinima, 1);
-						
-						eMedia = redeMedia.prepararExecucao(m.getData(), "Media");
-						redeMedia.normalizarDadosExecucao(eMedia, "Media");
-						redeMedia.executar(eMedia);
-						redeMedia.desnormalizarDados(eMedia, 2);
-						
-						writerTeste.print(m.getData() + ", ");
-						writerTeste.print(df.format(eMaxima.dadosSaida[0][0]) + ", ");
-						writerTeste.print(df.format(eMinima.dadosSaida[0][0]) + ", ");
-						writerTeste.println(df.format(eMedia.dadosSaida[0][0]));
+						if(!datasExcluidas.contains(m.getData().toString())){
+							eMaxima = redeMaxima.prepararExecucao(m.getData(), "Maxima");
+							redeMaxima.normalizarDadosExecucao(eMaxima, "Maxima");
+							redeMaxima.executar(eMaxima);
+							redeMaxima.desnormalizarDados(eMaxima, 0);
+							
+							eMinima = redeMinima.prepararExecucao(m.getData(), "Minima");
+							redeMinima.normalizarDadosExecucao(eMinima, "Minima");
+							redeMinima.executar(eMinima);
+							redeMinima.desnormalizarDados(eMinima, 1);
+							
+							eMedia = redeMedia.prepararExecucao(m.getData(), "Media");
+							redeMedia.normalizarDadosExecucao(eMedia, "Media");
+							redeMedia.executar(eMedia);
+							redeMedia.desnormalizarDados(eMedia, 2);
+							
+							writerTeste.print(m.getData() + ", ");
+							writerTeste.print(df.format(eMaxima.dadosSaida[0][0]) + ", ");
+							writerTeste.print(df.format(eMinima.dadosSaida[0][0]) + ", ");
+							writerTeste.println(df.format(eMedia.dadosSaida[0][0]));
+						}
 					}
 				}
 				writerTeste.close();
-			} catch (Exception ex) {
-				
+			} catch (Exception ex) {			
 				ex.printStackTrace();
 			}
 		}
@@ -222,39 +243,68 @@ public class Main {
 	
 	private static void printarTreino(RedeNeural rede, String treino, int temp, Elemento e){
 		
-		System.out.println();
-		System.out.println("\nRede Treinada: " + treino);
-		if(normalizacaoDesvio){
-			System.out.println("Tipo de normalizacao: Media e Desvio Padrao");
-		}else{
-			System.out.println("Tipo de normalizacao: Minimo Maximo");
-		}
-		if(!pesoGaussian){
-			System.out.println("Tipo de Peso: nextDouble");
-		}else{
-			System.out.println("Tipo de Peso: nextGaussian");
-		}
-		System.out.println("Numero de Entradas: " + numeroEntradas);
-		System.out.println("Tamanho Camada Intermediaria 1: " + tamanhoIntermediaria1);
-		System.out.println("Tamanho Camada Intermediaria 2: " + tamanhoIntermediaria2);
-		System.out.println("Tamanho Populacao: " + tamanhoPopulacao);
-		System.out.println("Chance de Mutacao: " + chanceMutacao + " = " + chanceMutacao*100 + "%");
-		System.out.println("Chance de CrossOver: " + chanceCross+ " = " + chanceCross*100 + "%");
-		System.out.println("Geracoes: " + geracoes);
-		if(!erroQuadratico){
-			System.out.println("Erro Percentual Medio final: " + e.getFitness()*100 + "%");
-		}else{
-			System.out.println("Erro Quadratico Medio final: " + e.getFitness());
-		}
-		System.out.println("Tempo de execucao (s): " + (fimTreino - inicioTreino) / 1000);
-		rede.printarMatrizes(e);
-		rede.desnormalizarDados(e, temp);
-		System.out.println("\nMatriz de Saida Desnormalizada:");
-		for(int i = 0; i < numeroEntradas; i++){
-			for(int j = 0; j < tamanhoSaida; j++){
-				System.out.print(e.dadosSaida[i][j] + ", ");	
+		try{
+			String path = "/home/guilherme/Desktop/TCC Real/Semestre 2/ArquivosNN/Executar/";
+			PrintWriter writer = new PrintWriter(path + "Output" + treino.split(" ")[1] + ".txt", "UTF-8");
+			
+			System.out.println();
+			System.out.println("\nRede Treinada: " + treino);
+			writer.println("\nRede Treinada: " + treino);
+			if(normalizacaoDesvio){
+				System.out.println("Tipo de normalizacao: Media e Desvio Padrao");
+				writer.println("Tipo de normalizacao: Media e Desvio Padrao");
+			}else{
+				System.out.println("Tipo de normalizacao: Minimo Maximo");
+				writer.println("Tipo de normalizacao: Minimo Maximo");
 			}
+			if(!pesoGaussian){
+				System.out.println("Tipo de Peso: nextDouble");
+				writer.println("Tipo de Peso: nextDouble");
+			}else{
+				System.out.println("Tipo de Peso: nextGaussian");
+				writer.println("Tipo de Peso: nextGaussian");
+			}
+			System.out.println("Numero de Entradas: " + numeroEntradas);
+			System.out.println("Tamanho Camada Intermediaria 1: " + tamanhoIntermediaria1);
+			System.out.println("Tamanho Camada Intermediaria 2: " + tamanhoIntermediaria2);
+			System.out.println("Tamanho Populacao: " + tamanhoPopulacao);
+			System.out.println("Chance de Mutacao: " + chanceMutacao + " = " + chanceMutacao*100 + "%");
+			System.out.println("Chance de CrossOver: " + chanceCross+ " = " + chanceCross*100 + "%");
+			System.out.println("Geracoes: " + Constantes.geracoes);
+			
+			writer.println("Numero de Entradas: " + numeroEntradas);
+			writer.println("Tamanho Camada Intermediaria 1: " + tamanhoIntermediaria1);
+			writer.println("Tamanho Camada Intermediaria 2: " + tamanhoIntermediaria2);
+			writer.println("Tamanho Populacao: " + tamanhoPopulacao);
+			writer.println("Chance de Mutacao: " + chanceMutacao + " = " + chanceMutacao*100 + "%");
+			writer.println("Chance de CrossOver: " + chanceCross+ " = " + chanceCross*100 + "%");
+			writer.println("Geracoes: " + Constantes.geracoes);
+			
+			if(!erroQuadratico){
+				System.out.println("Erro Percentual Medio final: " + e.getFitness()*100 + "%");
+				writer.println("Erro Percentual Medio final: " + e.getFitness()*100 + "%");
+			}else{
+				System.out.println("Erro Quadratico Medio final: " + e.getFitness());
+				writer.println("Erro Quadratico Medio final: " + e.getFitness());
+			}
+			System.out.println("Tempo de execucao (s): " + (fimTreino - inicioTreino) / 1000);
+			writer.println("Tempo de execucao (s): " + (fimTreino - inicioTreino) / 1000);
+			rede.printarMatrizes(e);
+			rede.desnormalizarDados(e, temp);
+			System.out.println("\nMatriz de Saida Desnormalizada:");
+			writer.println("\nMatriz de Saida Desnormalizada:");
+			for(int i = 0; i < numeroEntradas; i++){
+				for(int j = 0; j < tamanhoSaida; j++){
+					System.out.print(e.dadosSaida[i][j] + ", ");
+					writer.print(e.dadosSaida[i][j] + ", ");
+				}
+			}
+			writer.println();
+			System.out.println();
+			
+			writer.close();
+		}catch(Exception ex){
+			ex.printStackTrace();
 		}
-		System.out.println();
 	}
 }

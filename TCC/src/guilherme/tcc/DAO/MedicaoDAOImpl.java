@@ -115,6 +115,36 @@ public class MedicaoDAOImpl implements MedicaoDAO {
 	}
 	
 	@Override
+	public List<Medicao> getMedicaoTreino(int ano){
+		try{
+			Connection con = ConectarBanco.getConnection();
+			PreparedStatement stmt = con.prepareStatement("SELECT * FROM MEDICAO WHERE DATA BETWEEN ? and ?");
+			ResultSet rs = stmt.executeQuery();
+			List<Medicao> medicaoResult = new ArrayList<Medicao>();
+			
+			while(rs.next()){
+				Medicao m = new Medicao();
+				m.setId(rs.getInt(1));
+				m.setData(rs.getDate(2));
+				m.setPrecipitacao(rs.getFloat(3));
+				m.setTemperatura_maxima(rs.getFloat(4));
+				m.setTemperatura_minima(rs.getFloat(5));
+				m.setTemperatura_media(rs.getFloat(6));
+				//m.setCidade(rs.getString(6));
+				//m.setVelocidade_vento(rs.getFloat(7));
+				
+				medicaoResult.add(m);
+			}
+			stmt.close();
+			con.close();
+			return medicaoResult;
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@Override
 	public void updateMedicao(Medicao medicao) {
 		try{
 			Connection con = ConectarBanco.getConnection();

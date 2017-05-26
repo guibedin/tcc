@@ -860,21 +860,90 @@ public class RedeNeural {
 	public void gerarArquivosDeTreino(){
 		MedicaoDAO medicaoDAO = new MedicaoDAOImpl();
 		
-		// Inicialmente seleciona 3 meses inteiros (~90 linhas)
+		// Inicialmente seleciona 4 meses inteiros (~124 linhas) 
+		// Um mes de cada estacao do ano
+		// Janeiro - Maio - Agosto - Outubro
 		// Anos 2004 ate 2013 - Entradas de treino
-		List<Medicao> m2004 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2004-01-01"), Date.valueOf("2004-03-31"));
-		List<Medicao> m2005 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2005-01-01"), Date.valueOf("2005-03-31"));
-		List<Medicao> m2006 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2006-01-01"), Date.valueOf("2006-03-31"));
-		List<Medicao> m2007 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2007-01-01"), Date.valueOf("2007-03-31"));
-		List<Medicao> m2008 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2008-01-01"), Date.valueOf("2008-03-31"));
-		List<Medicao> m2009 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2009-01-01"), Date.valueOf("2009-03-31"));
-		List<Medicao> m2010 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2010-01-01"), Date.valueOf("2010-03-31"));
-		List<Medicao> m2011 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2011-01-01"), Date.valueOf("2011-03-31"));
-		List<Medicao> m2012 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2012-01-01"), Date.valueOf("2012-03-31"));
-		List<Medicao> m2013 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2013-01-01"), Date.valueOf("2013-03-31"));
+		
+		/*List<Medicao> m2004 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2004-01-01"), Date.valueOf("2004-01-31"));
+		m2004.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2004-05-01"), Date.valueOf("2004-05-31")));
+		m2004.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2004-08-01"), Date.valueOf("2004-08-31")));
+		m2004.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2004-10-01"), Date.valueOf("2004-10-31")));
+		
+		List<Medicao> m2005 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2005-01-01"), Date.valueOf("2005-01-31"));
+		m2005.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2005-05-01"), Date.valueOf("2005-05-31")));
+		m2005.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2005-08-01"), Date.valueOf("2005-08-31")));
+		m2005.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2005-10-01"), Date.valueOf("2005-10-31")));
+		
+		List<Medicao> m2006 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2006-01-01"), Date.valueOf("2006-01-31"));
+		m2006.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2006-05-01"), Date.valueOf("2006-05-31")));
+		m2006.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2006-08-01"), Date.valueOf("2006-08-31")));
+		m2006.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2006-10-01"), Date.valueOf("2006-10-31")));
+		
+		List<Medicao> m2007 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2007-01-01"), Date.valueOf("2007-01-31"));
+		m2007.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2007-05-01"), Date.valueOf("2007-05-31")));
+		m2007.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2007-08-01"), Date.valueOf("2007-08-31")));
+		m2007.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2007-10-01"), Date.valueOf("2007-10-31")));
+		
+		List<Medicao> m2008 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2008-01-01"), Date.valueOf("2008-01-31"));
+		m2008.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2008-05-01"), Date.valueOf("2008-05-31")));
+		m2008.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2008-08-01"), Date.valueOf("2008-08-31")));
+		m2008.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2008-10-01"), Date.valueOf("2008-10-31")));
+		
+		List<Medicao> m2009 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2009-01-01"), Date.valueOf("2009-01-31"));
+		m2009.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2009-05-01"), Date.valueOf("2009-05-31")));
+		m2009.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2009-08-01"), Date.valueOf("2009-08-31")));
+		m2009.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2009-10-01"), Date.valueOf("2009-10-31")));
+		
+		List<Medicao> m2010 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2010-01-01"), Date.valueOf("2010-01-31"));
+		m2010.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2010-05-01"), Date.valueOf("2010-05-31")));
+		m2010.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2010-08-01"), Date.valueOf("2010-08-31")));
+		m2010.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2010-10-01"), Date.valueOf("2010-10-31")));
+		
+		List<Medicao> m2011 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2011-01-01"), Date.valueOf("2011-01-31"));
+		m2011.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2011-05-01"), Date.valueOf("2011-05-31")));
+		m2011.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2011-08-01"), Date.valueOf("2011-08-31")));
+		m2011.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2011-10-01"), Date.valueOf("2011-10-31")));
+		
+		
+		List<Medicao> m2012 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2012-01-01"), Date.valueOf("2012-01-31"));
+		m2012.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2012-05-01"), Date.valueOf("2012-05-31")));
+		m2012.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2012-08-01"), Date.valueOf("2012-08-31")));
+		m2012.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2012-10-01"), Date.valueOf("2012-10-31")));
+		
+		
+		List<Medicao> m2013 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2013-01-01"), Date.valueOf("2013-01-31"));
+		m2013.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2013-05-01"), Date.valueOf("2013-05-31")));
+		m2013.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2013-08-01"), Date.valueOf("2013-08-31")));
+		m2013.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2013-10-01"), Date.valueOf("2013-10-31")));
+		
 		
 		// Ano 2014 - Saida de treino
-		List<Medicao> m2014 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2014-01-01"), Date.valueOf("2014-03-31"));
+		List<Medicao> m2014 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2014-01-01"), Date.valueOf("2014-01-31"));
+		/*m2014.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2014-05-01"), Date.valueOf("2014-05-31")));
+		m2014.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2014-08-01"), Date.valueOf("2014-08-31")));
+		m2014.addAll(medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2014-10-01"), Date.valueOf("2014-10-31")));
+		*/
+		
+		// Inicialmente seleciona o ano todo, exceto 16/11, 29/07, 18/07, 24/12, 25/12 
+		// Um mes de cada estacao do ano
+		// Janeiro - Maio - Agosto - Outubro
+		// Anos 2004 ate 2013 - Entradas de treino
+				
+		List<Medicao> m2004 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2004-01-01"), Date.valueOf("2004-12-31"));
+		
+		List<Medicao> m2005 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2005-01-01"), Date.valueOf("2005-12-31"));
+		List<Medicao> m2006 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2006-01-01"), Date.valueOf("2006-12-31"));
+		List<Medicao> m2007 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2007-01-01"), Date.valueOf("2007-12-31"));
+		List<Medicao> m2008 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2008-01-01"), Date.valueOf("2008-12-31"));
+		List<Medicao> m2009 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2009-01-01"), Date.valueOf("2009-12-31"));
+		List<Medicao> m2010 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2010-01-01"), Date.valueOf("2010-12-31"));
+		List<Medicao> m2011 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2011-01-01"), Date.valueOf("2011-12-31"));
+		List<Medicao> m2012 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2012-01-01"), Date.valueOf("2012-12-31"));
+		List<Medicao> m2013 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2013-01-01"), Date.valueOf("2013-12-31"));
+		
+		List<Medicao> m2014 = medicaoDAO.getMedicaoByIntervalo(Date.valueOf("2014-01-01"), Date.valueOf("2014-12-31"));
+		
 		
 		this.gerarEntradaAuxiliar(m2004, 0);
 		this.gerarEntradaAuxiliar(m2005, 1);
@@ -1448,12 +1517,26 @@ public class RedeNeural {
 	
 	public void gerarEntradaAuxiliar(List<Medicao> medicoes, int i){
 		int j = 0;
+		
 		for(Medicao m : medicoes){
 			if(j < numeroEntradas){
-				maximasEntrada[i][j] = m.getTemperatura_maxima();
-				minimasEntrada[i][j] = m.getTemperatura_minima();
-				mediasEntrada[i][j] = m.getTemperatura_media();
-				precipitacaoEntrada[i][j] = m.getPrecipitacao();
+				// Exclui dias do ano que nao devem ser utilizados, pois nao sao todos os anos que possuem essas medicoes
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(m.getData());
+				List<String> datasExcluidas = new ArrayList<String>();
+				datasExcluidas.add(cal.get(Calendar.YEAR)+"-02-29");
+				datasExcluidas.add(cal.get(Calendar.YEAR)+"-11-16");
+				datasExcluidas.add(cal.get(Calendar.YEAR)+"-07-29");
+				datasExcluidas.add(cal.get(Calendar.YEAR)+"-07-18");
+				datasExcluidas.add(cal.get(Calendar.YEAR)+"-12-24");
+				datasExcluidas.add(cal.get(Calendar.YEAR)+"-12-25");
+				
+				if(!datasExcluidas.contains(m.getData().toString())){
+					maximasEntrada[i][j] = m.getTemperatura_maxima();
+					minimasEntrada[i][j] = m.getTemperatura_minima();
+					mediasEntrada[i][j] = m.getTemperatura_media();
+					precipitacaoEntrada[i][j] = m.getPrecipitacao();
+				}
 			}
 			j++;
 		}
@@ -1463,10 +1546,23 @@ public class RedeNeural {
 		int j = 0;
 		for(Medicao m : medicoes){
 			if(j < numeroEntradas){
-				maximasSaida[i][j] = m.getTemperatura_maxima();
-				minimasSaida[i][j] = m.getTemperatura_minima();
-				mediasSaida[i][j] = m.getTemperatura_media();
-				precipitacaoSaida[i][j] = m.getPrecipitacao();
+				// Exclui dias do ano que nao devem ser utilizados, pois nao sao todos os anos que possuem essas medicoes
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(m.getData());
+				List<String> datasExcluidas = new ArrayList<String>();
+				datasExcluidas.add(cal.get(Calendar.YEAR)+"-02-29");
+				datasExcluidas.add(cal.get(Calendar.YEAR)+"-11-16");
+				datasExcluidas.add(cal.get(Calendar.YEAR)+"-07-29");
+				datasExcluidas.add(cal.get(Calendar.YEAR)+"-07-18");
+				datasExcluidas.add(cal.get(Calendar.YEAR)+"-12-24");
+				datasExcluidas.add(cal.get(Calendar.YEAR)+"-12-25");
+				
+				if(!datasExcluidas.contains(m.getData().toString())){
+					maximasSaida[i][j] = m.getTemperatura_maxima();
+					minimasSaida[i][j] = m.getTemperatura_minima();
+					mediasSaida[i][j] = m.getTemperatura_media();
+					precipitacaoSaida[i][j] = m.getPrecipitacao();
+				}
 			}
 			j++;
 		}
@@ -1651,7 +1747,7 @@ public class RedeNeural {
 		}
 		
 		// Printa Biass
-		System.out.println(String.format("\nBias Intermediaria: %f\nBias Saida: %f", e.biasIntermediaria, e.biasSaida));
+		//System.out.println(String.format("\nBias Intermediaria: %f\nBias Saida: %f", e.biasIntermediaria, e.biasSaida));
 		
 		if(treino){
 			// Printa Matriz da Saida
