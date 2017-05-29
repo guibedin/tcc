@@ -2,7 +2,7 @@ package util;
 
 public final class Constantes {
 	
-	public static final boolean treino = true; // define se eh treino ou execucao normal
+	public static final boolean treino = false; // define se eh treino ou execucao normal
 	public static final boolean normalizacaoDesvio = false; // define tipo de normalizacao utilizada
 	public static final boolean erroQuadratico = true; // define tipo de erro calculado
 	public static final boolean pesoGaussian = true; // se true, peso entra -1 e 1

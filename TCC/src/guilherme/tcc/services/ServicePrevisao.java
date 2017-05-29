@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 
 import javax.ws.rs.GET;
@@ -12,8 +13,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import guilherme.tcc.classes.Previsao;
+import guilherme.tcc.DAO.PrevisaoDAO;
+import guilherme.tcc.DAO.PrevisaoDAOImpl;
 import guilherme.tcc.classes.Elemento;
+import guilherme.tcc.classes.Previsao;
 import guilherme.tcc.classes.RedeNeural;
 
 // Plain old Java Object it does not extend as class or implements 
@@ -56,51 +59,64 @@ public class ServicePrevisao {
 		ponto.setDecimalSeparator('.');
 		DecimalFormat df = new DecimalFormat("00.0000", ponto);
 		try{
+			PrevisaoDAO previsaoDAO = new PrevisaoDAOImpl();
+			
 			java.util.Date d = formatter.parse(data);
 			Date sqlDate = new Date(d.getTime());
 			
-			eMaxima = redeMaxima.prepararExecucao(sqlDate, "Maxima");
-			redeMaxima.normalizarDadosExecucao(eMaxima, "Maxima");
-			redeMaxima.executar(eMaxima);
-			redeMaxima.desnormalizarDados(eMaxima, 0);
-			redeMaxima.printarMatrizes(eMaxima);
+			// Verifica se ja existe previsao para o dia solicitado no BD
+			List<Previsao> prev = previsaoDAO.getPrevisaoByDate(sqlDate);
 			
-			
-			eMinima = redeMinima.prepararExecucao(sqlDate, "Minima");
-			redeMinima.normalizarDadosExecucao(eMinima, "Minima");
-			redeMinima.executar(eMinima);
-			redeMinima.desnormalizarDados(eMinima, 1);
-			redeMinima.printarMatrizes(eMinima);
-			
-			eMedia = redeMedia.prepararExecucao(sqlDate, "Media");
-			redeMedia.normalizarDadosExecucao(eMedia, "Media");
-			redeMedia.executar(eMedia);
-			redeMedia.desnormalizarDados(eMedia, 2);
-			redeMedia.printarMatrizes(eMedia);
-			
-			/*
-			ePrecipitacao = redePrecipitacao.prepararExecucao(sqlDate, "Precipitacao");
-			redePrecipitacao.normalizarDadosExecucao(ePrecipitacao, "Precipitacao");
-			redePrecipitacao.executar(ePrecipitacao);
-			redePrecipitacao.desnormalizarDados(ePrecipitacao, 3);
-			redePrecipitacao.printarMatrizes(ePrecipitacao);
-			*/
-			
-			p.setData(sqlDate);
-			p.setTemperatura_maxima(eMaxima.dadosSaida[0][0]);
-			p.setTemperatura_minima(eMinima.dadosSaida[0][0]);
-			p.setTemperatura_media(eMedia.dadosSaida[0][0]);
-			//p.setPrecipitacao(ePrecipitacao.dadosSaida[0][0]);
-			
-			resultado = p.previsaoToJSONString();
-			
+			if(!prev.isEmpty()){
+				resultado = prev.get(0).previsaoToJSONString();
+			}else{
+				eMaxima = redeMaxima.prepararExecucao(sqlDate, "Maxima");
+				redeMaxima.normalizarDadosExecucao(eMaxima, "Maxima");
+				redeMaxima.executar(eMaxima);
+				redeMaxima.desnormalizarDados(eMaxima, 0);
+				redeMaxima.printarMatrizes(eMaxima);
+				
+				
+				eMinima = redeMinima.prepararExecucao(sqlDate, "Minima");
+				redeMinima.normalizarDadosExecucao(eMinima, "Minima");
+				redeMinima.executar(eMinima);
+				redeMinima.desnormalizarDados(eMinima, 1);
+				redeMinima.printarMatrizes(eMinima);
+				
+				eMedia = redeMedia.prepararExecucao(sqlDate, "Media");
+				redeMedia.normalizarDadosExecucao(eMedia, "Media");
+				redeMedia.executar(eMedia);
+				redeMedia.desnormalizarDados(eMedia, 2);
+				redeMedia.printarMatrizes(eMedia);
+				
+				/*
+				ePrecipitacao = redePrecipitacao.prepararExecucao(sqlDate, "Precipitacao");
+				redePrecipitacao.normalizarDadosExecucao(ePrecipitacao, "Precipitacao");
+				redePrecipitacao.executar(ePrecipitacao);
+				redePrecipitacao.desnormalizarDados(ePrecipitacao, 3);
+				redePrecipitacao.printarMatrizes(ePrecipitacao);
+				*/
+				
+				p.setData(sqlDate);
+				p.setTemperatura_maxima(eMaxima.dadosSaida[0][0]);
+				p.setTemperatura_minima(eMinima.dadosSaida[0][0]);
+				p.setTemperatura_media(eMedia.dadosSaida[0][0]);
+				//p.setPrecipitacao(ePrecipitacao.dadosSaida[0][0]);
+				
+				// Insere previsao realizada no BD
+				previsaoDAO.updatePrevisao(p);
+				
+				resultado = p.previsaoToJSONString();
+				System.out.println("Resultado retornado para cliente: " + resultado);
+				return resultado;
+			}
 			//resultado = p.fazerPrevisao(sqlDate);
 		}catch(Exception ex){
 			ex.printStackTrace();
 			return null;
 		}
-		System.out.println("Resultado retornado para cliente: " + resultado);
 		
+		System.out.println("Resultado retornado para cliente: " + resultado);	
 		return resultado;
 	}
 

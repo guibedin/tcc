@@ -109,14 +109,14 @@ public class PrevisaoDAOImpl implements PrevisaoDAO {
 	public void updatePrevisao(Previsao previsao) {
 		try{
 			Connection con = ConectarBanco.getConnection();
-			PreparedStatement stmt = con.prepareStatement("INSERT INTO PREVISAO (DATA, PRECIPITACAO, TEMPERATURA_MAXIMA, TEMPERATURA_MINIMA, TEMPERATURA_MEDIA) "
-				+ "VALUES (?,?,?,?,?,?)");
+			PreparedStatement stmt = con.prepareStatement("INSERT INTO PREVISAO (DATA, TEMPERATURA_MAXIMA, TEMPERATURA_MINIMA, TEMPERATURA_MEDIA) "
+				+ "VALUES (?,?,?,?)");
 			
 			stmt.setDate(1, previsao.getData());
-			stmt.setDouble(2, previsao.getPrecipitacao());
-			stmt.setDouble(3, previsao.getTemperatura_maxima());
-			stmt.setDouble(4, previsao.getTemperatura_minima());	
-			stmt.setDouble(5, previsao.getTemperatura_media());
+			//stmt.setDouble(2, previsao.getPrecipitacao());
+			stmt.setDouble(2, previsao.getTemperatura_maxima());
+			stmt.setDouble(3, previsao.getTemperatura_minima());	
+			stmt.setDouble(4, previsao.getTemperatura_media());
 			//stmt.setString(6, previsao.getCidade());
 			//stmt.setFloat(6, previsao.getVelocidade_vento());
 			
